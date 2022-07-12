@@ -62,10 +62,10 @@ def show_result(x, y, pred_y):
 
 class NeuralNetwork():
     'Create a two hidden layer neural network model.'
-    def __init__(self, act):
+    def __init__(self, act='sigmoid'):
         'initail weights'
-        self.layer1 = [{'weight': [np.random.random() for i in range(2+1)]} for n in range(4)] #(2, 4)
-        self.layer2 = [{'weight': [np.random.random() for i in range(4+1)]} for n in range(6)] #(4, 6)
+        self.layer1 = [{'weight': [np.random.random() for i in range(2+1)]} for n in range(4+1)] #(2, 4) + bias
+        self.layer2 = [{'weight': [np.random.random() for i in range(4+1)]} for n in range(6+1)] #(4, 6) + bias
         self.output = [{'weight': [np.random.random() for i in range(6+1)]} for n in range(1)] #(6, 1)
         self.act_method = act
     
@@ -76,12 +76,12 @@ class NeuralNetwork():
         z1 = self.activation(z1)
         for i in range(len(self.layer1)):
             self.layer1[i]['output'] = z1[i]
-        # # the second hidden layer
+        # the second hidden layer
         z2 = self.linear_sum(self.layer2, z1)
         z2 = self.activation(z2)
         for i in range(len(self.layer2)):
             self.layer2[i]['output'] = z2[i]
-        # # output of the nwtwork
+        # output of the nwtwork
         y = self.linear_sum(self.output, z2)
         y = self.activation(y)
         for i in range(len(self.output)):
@@ -89,102 +89,126 @@ class NeuralNetwork():
         return y
 
     def activation(self, x):
-        'Activation functions'
+        'Activation functions.\nsigmoid, ReLU, leaky ReLU, tanh, without'
         if self.act_method == 'sigmoid':
             return 1.0/(1.0 + np.exp(-x))
         if self.act_method == 'ReLU':
-            return
+            return np.maximum(0.0, x)
+        if self.act_method == 'leaky ReLU':
+            return np.maximum(0.1*x, x)
         if self.act_method == 'tanh':
-            return
+            return np.tanh(x)
+        if self.act_method == 'without':
+            return x
 
     def derivative_activation(self, x):
-        'The derivative of activation functions'
+        'The derivative of activation functions.\nsigmoid, ReLU, leaky ReLU, tanh, without'
         if self.act_method == 'sigmoid':
             return np.multiply(x, 1.0 - x)
         if self.act_method == 'ReLU':
-            return
+            if x < 0:
+                return 0.0
+            else:
+                return 1.0
+        if self.act_method == 'leaky ReLU':
+            if x < 0:
+                return 0.1
+            else:
+                return 1.0
         if self.act_method == 'tanh':
-            return
+            return 1.0 - (x ** 2)
+        if self.act_method == 'without':
+            return 1.0
 
     def linear_sum(self, layers, inputs):
         'Linear function to sum the weights and inputs.'
         channel = []
         # for each channel
         for weights in layers:
-            outputs = weights['weight'][0]   # last weight -> bias term
-            outputs += weights['weight'][1:] @ inputs
+            outputs = weights['weight'] @ inputs
             channel.append(outputs)
         return np.array(channel)
 
     def backward(self, y):
         'The backward pass.\nOutput : the gradient'
         # compute wh for all weights from hidden layer to output layer, output layer -> mse backward
-        for i in range(len(self.output)):   # each channel
-            y_gradient = (self.output[i]['output'] - y.T)
-            self.output[i]['delta'] = self.derivative_activation(self.output[i]['output']) * y_gradient #(1)
+        for i in range(len(self.output)):   # each channel, output layer
+            y_gradient = (self.output[i]['output'] - y) # derivation of the loss function
+            self.output[i]['delta'] = self.derivative_activation(self.output[i]['output']) * y_gradient
         # compute wi for all weights from input layer to hidden layer
-        for i in range(len(self.layer2)):   # each channel
+        for i in range(len(self.layer2)):   # each channel, hidden layer 2
             layer2_gradient = 0
             for j in range(len(self.output)):
-                layer2_gradient += self.output[j]['delta'] * self.output[j]['weight'][i+1]   # expect bias term
-            self.layer2[i]['delta'] = self.derivative_activation(self.layer2[i]['output']) * layer2_gradient #(6)
-        for i in range(len(self.layer1)):   # each channel
+                layer2_gradient += self.output[j]['delta'] * self.output[j]['weight'][i]   # expect bias term
+            self.layer2[i]['delta'] = self.derivative_activation(self.layer2[i]['output']) * layer2_gradient
+        for i in range(len(self.layer1)):   # each channel, hidden layer 1
             layer1_gradient = 0
             for j in range(len(self.layer2)):
-                layer1_gradient += self.layer2[j]['delta'] * self.layer2[j]['weight'][i+1]   # expect bias term
-            self.layer1[i]['delta'] = self.derivative_activation(self.layer1[i]['output']) * layer1_gradient #(4)
+                layer1_gradient += self.layer2[j]['delta'] * self.layer2[j]['weight'][i]   # expect bias term
+            self.layer1[i]['delta'] = self.derivative_activation(self.layer1[i]['output']) * layer1_gradient
         
     def updat_weight(self, ln, x):
         'Update the weights by learning rate.'
         # new_weight = old_weight - ln * backward_pass * forward_pass
-        for i in range(len(self.layer1)):   # each channel -> 4
-            # each weight (2+1)
-            self.layer1[i]['weight'][0] -= float(ln * self.layer1[i]['delta'])
-            self.layer1[i]['weight'][1:] -= ln * self.layer1[i]['delta'] * x
-        for i in range(len(self.layer2)):   # each channel -> 6
-            # each weight (4+1)
-            data = [float(self.layer1[j]['output']) for j in range(len(self.layer1))]
-            self.layer2[i]['weight'][0] -= float(ln * self.layer2[i]['delta'])
-            self.layer2[i]['weight'][1:] -= ln * self.layer2[i]['delta'] * data
-        for i in range(len(self.output)):   # each channel -> 1
-            # each weight (6+1)
+        for i in range(len(self.layer1)):   # each channel
+            # each weight
+            self.layer1[i]['weight'] -= ln * x * self.layer1[i]['delta']
+        for i in range(len(self.layer2)):   # each channel
+            # each weight
+            data = [self.layer1[j]['output'] for j in range(len(self.layer1))]
+            data = np.array(data).flatten()
+            self.layer2[i]['weight'] -= ln * data * self.layer2[i]['delta']
+        for i in range(len(self.output)):   # each channel
+            # each weight
             data = [float(self.layer2[j]['output']) for j in range(len(self.layer2))]
-            self.output[i]['weight'][0] -= float(ln * self.output[i]['delta'])
-            self.output[i]['weight'][1:] -= ln * self.output[i]['delta'] * data
+            data = np.array(data).flatten()
+            self.output[i]['weight'] -= ln * data * self.output[i]['delta']
+
+    def predict(self, test):
+        'Get the prediction with testing data.'
+        # Forward pass
+        z1 = self.linear_sum(self.layer1, test)
+        z1 = self.activation(z1)
+        # the second hidden layer
+        z2 = self.linear_sum(self.layer2, z1)
+        z2 = self.activation(z2)
+        # output of the nwtwork
+        y = self.linear_sum(self.output, z2)
+        y = self.activation(y)
+        return y
 
 
 def MSE(pre_y, y):
     'MSE (mean-square error) loss function.\nOutput : error value'
     n = len(y)
-    # MSE = sum((pre_y - y)^2) / n
-    square = (pre_y - y) ** 2
+    # MSE = sum((pre_y - y)^2) / 2n
+    square = 0.5 * (pre_y - y) ** 2
     mse = np.sum(square) / n
     return mse
 
 
-def train_model(nn, x, y):
+def train_model(nn, x, y, epoch, ln):
     'Train the model to get network weights.'
     # Initialize network weights (often all random values)
+    X = np.append(x, np.ones((len(x), 1)), axis=1) # add bias term at last
     loss_log = []
-    epoch = 100
-    ln = 0.1
     # forEach training weights named ex
     for e in range(epoch):
         total_loss = 0
         for i in range(len(y)):
-            x_tf = x[i].T
-            prediction = nn(x_tf)   # forward pass
+            x_data = np.atleast_2d(X[i]).T
+            prediction = nn(x_data)   # forward pass
             actual = y[i]  # ground truth
             # compute error (prediction - actual) at the output units, calculate loss
             loss = MSE(prediction, actual)
             # using loss value to do backward pass to get the gradient
             nn.backward(actual)
             # update network weights //input layer not modified by error estimate
-            nn.updat_weight(ln, x_tf)
+            nn.updat_weight(ln, X[i])
             total_loss += loss
-        # if e % 50 == 0: 
-        print(f"epoch {e}, loss : {total_loss}")
-        loss_log.append(total_loss)
+        if e % 500 == 0: 
+            print(f"epoch {e}, loss : {total_loss}")
+            loss_log.append(total_loss)
     # until all examples classified correctly or another criterion satisfied
     # Visualize the learning curve
     learning_curve(loss_log)
@@ -193,11 +217,10 @@ def train_model(nn, x, y):
 def learning_curve(loss):
     'Plot the learning curve (loss, epoch) of the model.'
     epoch = len(loss)
-    print(epoch)
     plt.title('Learning Curve', fontsize=18)
     plt.xlabel('epoch')
     plt.ylabel('loss')
-    plt.plot([i for i in range(epoch)], loss)
+    plt.plot([i*500 for i in range(epoch)], loss)
     plt.show()
 
 
@@ -205,10 +228,12 @@ def test_model(nn, test_x):
     'Use testing data in the model to get the prediction.\nOutput : the prediction values and class'
     pred_y = []
     pred_class = []
-    for x in test_x:
+    # add bias term at last
+    x_bias = np.append(test_x, np.ones((len(test_x), 1)), axis=1)
+    for x in x_bias:
         # predict value
-        x = x.T
-        y = nn(x)
+        x = np.atleast_2d(x).T
+        y = nn.predict(x)
         pred_y.append(y)
         # classify
         if y < 0.5:
@@ -221,34 +246,41 @@ def test_model(nn, test_x):
 
 def accuracy(pred_value, pred_class, y):
     'Compute the accuracy of the prediction.'
-    acc = 0
+    error = 0
     n = len(y)
     for i in range(n):
         print(f"data{i} : {pred_value[i]}, pred = {pred_class[i]}, truth = {y[i]}")
         if pred_class[i] != y[i]:
-            acc += 1
-    acc /= n
-    print(f"Accuracy of my model on test set: {acc}")
+            error += 1
+    error /= n
+    print(f"Accuracy of my model on test set: {1-error}")
 
 
-if __name__ == "__main__":
-    n = 100
+if __name__ == "__main__": 
     # Prepare data
-    # Generate input data x(x1, x2) and y
-    # x_linear, y_linear = generate_linear(n)
-    x_xor, y_xor = generate_XOR_easy()
+    n = 100
+    # epoch_linear = 13000
+    # ln_linear = 0.01
+    epoch_xor = 15000
+    ln_xor = 0.3
 
-    # Create model
-    model = NeuralNetwork('sigmoid')
+    # Generate input data x(x1, x2) and y 
+    x_xor, y_xor = generate_XOR_easy()
+    # x_linear, y_linear = generate_linear(n)
+
+    # Create model, activation function -> 'sigmoid', 'ReLU', 'leaky ReLU', 'tanh', 'without'.
+    model = NeuralNetwork('leaky ReLU')
+
     # Training
-    train_model(model, x_xor, y_xor)
-    # train_model(model, x_linear, y_linear)
+    train_model(model, x_xor, y_xor, epoch_xor, ln_xor)
+    # train_model(model, x_linear, y_linear, epoch_linear, ln_linear)
+
     # Testing
     pred_y, pred_c = test_model(model, x_xor)
-    # pred_y, pred_c = test_model(model, x_linear)
     accuracy(pred_y, pred_c, y_xor)
+    # pred_y, pred_c = test_model(model, x_linear)
     # accuracy(pred_y, pred_c, y_linear)
 
-    # Visualize the result
+    # # Visualize the result
     show_result(x_xor, y_xor, pred_c)
     # show_result(x_linear, y_linear, pred_c)

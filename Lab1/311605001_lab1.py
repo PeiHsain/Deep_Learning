@@ -64,9 +64,10 @@ class NeuralNetwork():
     'Create a two hidden layer neural network model.'
     def __init__(self, act='sigmoid'):
         'initail weights'
-        self.layer1 = [{'weight': [np.random.random() for i in range(2+1)]} for n in range(4+1)] #(2, 4) + bias
-        self.layer2 = [{'weight': [np.random.random() for i in range(4+1)]} for n in range(6+1)] #(4, 6) + bias
-        self.output = [{'weight': [np.random.random() for i in range(6+1)]} for n in range(1)] #(6, 1)
+        # w = random(n) ~ N(0, 1) / sqrt(n) -> normalize
+        self.layer1 = [{'weight': np.random.randn(2+1) / np.sqrt(2+1)} for n in range(2+1)] #(in, out) + bias
+        self.layer2 = [{'weight': np.random.randn(2+1) / np.sqrt(2+1)} for n in range(2+1)] #(in, out) + bias
+        self.output = [{'weight': np.random.randn(2+1) / np.sqrt(2+1)} for n in range(1)] #(in, out)
         self.act_method = act
     
     def __call__(self, x):
@@ -95,7 +96,7 @@ class NeuralNetwork():
         if self.act_method == 'ReLU':
             return np.maximum(0.0, x)
         if self.act_method == 'leaky ReLU':
-            return np.maximum(0.1*x, x)
+            return np.maximum(0.01*x, x)
         if self.act_method == 'tanh':
             return np.tanh(x)
         if self.act_method == 'without':
@@ -112,7 +113,7 @@ class NeuralNetwork():
                 return 1.0
         if self.act_method == 'leaky ReLU':
             if x < 0:
-                return 0.1
+                return 0.01
             else:
                 return 1.0
         if self.act_method == 'tanh':
@@ -133,7 +134,7 @@ class NeuralNetwork():
         'The backward pass.\nOutput : the gradient'
         # compute wh for all weights from hidden layer to output layer, output layer -> mse backward
         for i in range(len(self.output)):   # each channel, output layer
-            y_gradient = (self.output[i]['output'] - y) # derivation of the loss function
+            y_gradient = 2 * (self.output[i]['output'] - y) # derivation of the loss function
             self.output[i]['delta'] = self.derivative_activation(self.output[i]['output']) * y_gradient
         # compute wi for all weights from input layer to hidden layer
         for i in range(len(self.layer2)):   # each channel, hidden layer 2
@@ -182,7 +183,7 @@ def MSE(pre_y, y):
     'MSE (mean-square error) loss function.\nOutput : error value'
     n = len(y)
     # MSE = sum((pre_y - y)^2) / 2n
-    square = 0.5 * (pre_y - y) ** 2
+    square = (pre_y - y) ** 2
     mse = np.sum(square) / n
     return mse
 
@@ -206,9 +207,10 @@ def train_model(nn, x, y, epoch, ln):
             # update network weights //input layer not modified by error estimate
             nn.updat_weight(ln, X[i])
             total_loss += loss
+        total_loss /= len(y)
+        loss_log.append(total_loss)
         if e % 500 == 0: 
-            print(f"epoch {e}, loss : {total_loss}")
-            loss_log.append(total_loss)
+            print(f"epoch {e}, loss : {total_loss}") 
     # until all examples classified correctly or another criterion satisfied
     # Visualize the learning curve
     learning_curve(loss_log)
@@ -220,7 +222,7 @@ def learning_curve(loss):
     plt.title('Learning Curve', fontsize=18)
     plt.xlabel('epoch')
     plt.ylabel('loss')
-    plt.plot([i*500 for i in range(epoch)], loss)
+    plt.plot(range(epoch), loss)
     plt.show()
 
 
@@ -259,28 +261,28 @@ def accuracy(pred_value, pred_class, y):
 if __name__ == "__main__": 
     # Prepare data
     n = 100
-    # epoch_linear = 13000
-    # ln_linear = 0.01
-    epoch_xor = 15000
-    ln_xor = 0.3
+    epoch_linear = 10000
+    ln_linear = 0.1
+    # epoch_xor = 15000
+    # ln_xor = 0.1
 
     # Generate input data x(x1, x2) and y 
-    x_xor, y_xor = generate_XOR_easy()
-    # x_linear, y_linear = generate_linear(n)
+    # x_xor, y_xor = generate_XOR_easy()
+    x_linear, y_linear = generate_linear(n)
 
     # Create model, activation function -> 'sigmoid', 'ReLU', 'leaky ReLU', 'tanh', 'without'.
-    model = NeuralNetwork('leaky ReLU')
+    model = NeuralNetwork('ReLU')
 
     # Training
-    train_model(model, x_xor, y_xor, epoch_xor, ln_xor)
-    # train_model(model, x_linear, y_linear, epoch_linear, ln_linear)
+    # train_model(model, x_xor, y_xor, epoch_xor, ln_xor)
+    train_model(model, x_linear, y_linear, epoch_linear, ln_linear)
 
     # Testing
-    pred_y, pred_c = test_model(model, x_xor)
-    accuracy(pred_y, pred_c, y_xor)
-    # pred_y, pred_c = test_model(model, x_linear)
-    # accuracy(pred_y, pred_c, y_linear)
+    # pred_y, pred_c = test_model(model, x_xor)
+    # accuracy(pred_y, pred_c, y_xor)
+    pred_y, pred_c = test_model(model, x_linear)
+    accuracy(pred_y, pred_c, y_linear)
 
     # # Visualize the result
-    show_result(x_xor, y_xor, pred_c)
-    # show_result(x_linear, y_linear, pred_c)
+    # show_result(x_xor, y_xor, pred_c)
+    show_result(x_linear, y_linear, pred_c)

@@ -5,7 +5,6 @@
     Additionally, you need to try different kinds of activation function including ReLU, Leaky ReLU, ELU.
 """
 
-# In[]:
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
@@ -13,13 +12,12 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 from dataloader import read_bci_data
-from sklearn.metrics import accuracy_score
 
 # Check the GPU is avialible, else use the CPU
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
 
-# In[]
+
 class EEGNet(nn.Module):
     'EEGNet model'
     def __init__(self, activation='ELU'):
@@ -71,7 +69,6 @@ class EEGNet(nn.Module):
         x = self.classity(x) # Classification
         return x
 
-# In[]
 
 class DeepConvNet(nn.Module):
     'DeepConvNet model'
@@ -80,7 +77,7 @@ class DeepConvNet(nn.Module):
         super(DeepConvNet, self).__init__()
         # Activation function: 'ReLU', 'Leaky ReLU', 'ELU'
         if activation == 'ELU':
-            self.activate = nn.ELU(alpha=1.0)
+            self.activate = nn.ELU(alpha=0.1)
         elif activation == 'ReLU':
             self.activate = nn.ReLU()
         elif activation == 'Leaky ReLU':
@@ -124,7 +121,6 @@ class DeepConvNet(nn.Module):
         return x
 
 
-# In[]
 def Train(model, train_loader, optimizer, loss_function, num):
     'Train the model.\nOutput : the loss and accuracy'
     model.train() # training mode
@@ -182,10 +178,10 @@ def TrainAndTest(model_name, train_loader, test_loader, train_num, test_num, Lea
         if model_name == 'EEGNet':
             model = EEGNet(activation=Activation).to(device)
         elif model_name == 'DeepConvNet':
-            model = EEGNet(activation=Activation).to(device)
+            model = DeepConvNet(activation=Activation).to(device)
         # Loss function and Optimizer
         Loss = nn.CrossEntropyLoss()
-        Optimizer = torch.optim.Adam(model.parameters(), lr=Learning_rate)
+        Optimizer = torch.optim.Adam(model.parameters(), lr=Learning_rate, weight_decay=0.01)
         # Train and Test
         losslog_tmp = []
         acclog_train_tmp = []
@@ -207,11 +203,10 @@ def TrainAndTest(model_name, train_loader, test_loader, train_num, test_num, Lea
         test_acclog.append(acclog_test_tmp)
         best_acclog.append(highest_acc)
         # Save the best model parameters
-        torch.save(best_model.state_dict(), f'./model/{model_name}_{Activation}_1.pt')
+        torch.save(best_model.state_dict(), f'./model/{model_name}_{Activation}_5.pt')
     return train_losslog, train_acclog, test_acclog, best_acclog
 
 
-# In[]
 def Plot_Acc(model, epoch, train_acc, test_acc):
     'Plot the comparision figure.'
     plt.title(f"Activation function comparision ({model})", fontsize=15)
@@ -250,12 +245,12 @@ def Best_Acc(model, log):
     print(f'{model} + ELU = {log[2]:.4f}')
 
 
-# In[]:
 if __name__ == "__main__":
     # Hyperparameters
     Batch_size = 64
     Epochs = 300
-    Learning_rate = 1e-2
+    Learning_rate = 1e-3
+
     # Load the train and test data, 2 classes (right hand, left head)
     # 1080 data, 2 channels, 750 time points
     train_data, train_label, test_data, test_label = read_bci_data()
@@ -267,39 +262,31 @@ if __name__ == "__main__":
     train_loader = DataLoader(train_dataset, batch_size=Batch_size, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=Batch_size, shuffle=False)
 
-# In[]
-## EEG
-# Training and testing
-train_losslog, train_acclog, test_acclog, best_acclog = TrainAndTest('EEGNet', train_loader, test_loader, train_num, test_num, Learning_rate, Epochs)
-# In[]
-# Plot
-Plot_Acc('EEGNet', Epochs, train_acclog, test_acclog)
-Plot_Loss('EEGNet', Epochs, train_losslog)
-Best_Acc('EEGNet', best_acclog)
+    ## EEG
+    # Training and testing
+    train_losslog, train_acclog, test_acclog, best_acclog = TrainAndTest('EEGNet', train_loader, test_loader, train_num, test_num, Learning_rate, Epochs)
+    # Plot
+    Plot_Acc('EEGNet', Epochs, train_acclog, test_acclog)
+    Plot_Loss('EEGNet', Epochs, train_losslog)
+    Best_Acc('EEGNet', best_acclog)
 
+    ## DeepConv
+    # Training and testing
+    train_losslog, train_acclog, test_acclog, best_acclog = TrainAndTest('DeepConvNet', train_loader, test_loader, train_num, test_num, Learning_rate, Epochs)
+    # Plot
+    Plot_Acc('DeepConvNet', Epochs, train_acclog, test_acclog)
+    Plot_Loss('DeepConvNet', Epochs, train_losslog)
+    Best_Acc('DeepConvNet', best_acclog)
 
-# In[]
-## DeepConv
-# Training and testing
-train_losslog, train_acclog, test_acclog, best_acclog = TrainAndTest('DeepConvNet', train_loader, test_loader, train_num, test_num, Learning_rate, Epochs)
-# Plot
-Plot_Acc('DeepConvNet', Epochs, train_acclog, test_acclog)
-Plot_Loss('DeepConvNet', Epochs, train_losslog)
-Best_Acc('DeepConvNet', best_acclog)
-
-
-# In[]
-## Demo Part
-# Prepare testing data
-Batch_size = 64
-train_data, train_label, test_data, test_label = read_bci_data()
-test_num = len(train_label)
-test_dataset = TensorDataset(torch.from_numpy(test_data), torch.from_numpy(test_label))
-test_loader = DataLoader(test_dataset, batch_size=Batch_size, shuffle=False)
-# Testing the model, 'EEGNet_ReLU', 'EEGNet_Leaky ReLU', 'EEGNet_ELU'
-model = EEGNet('Leaky ReLU').to(device)
-model.load_state_dict(torch.load('./model/EEGNet_Leaky ReLU.pt'))
-acc = Test(model, test_loader, test_num)
-print(f'The highest accuracy model = {acc}')
-
-# %%
+    ## Demo Part
+    # Prepare testing data
+    Batch_size = 64
+    train_data, train_label, test_data, test_label = read_bci_data()
+    test_num = len(train_label)
+    test_dataset = TensorDataset(torch.from_numpy(test_data), torch.from_numpy(test_label))
+    test_loader = DataLoader(test_dataset, batch_size=Batch_size, shuffle=False)
+    # Testing the model, 'EEGNet_ReLU', 'EEGNet_Leaky ReLU', 'EEGNet_ELU'
+    model = EEGNet('ReLU').to(device)
+    model.load_state_dict(torch.load('./model/EEGNet_ReLU_2.pt'))
+    acc = Test(model, test_loader, test_num)
+    print(f'The highest accuracy model = {acc}')

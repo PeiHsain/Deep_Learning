@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 import torch
+import os
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import models
@@ -36,9 +37,9 @@ class ResNet18(nn.Module):
         self.model_ft = models.resnet18(pretrained=use_pretrained)
         # Only want to update the parameters for the layer(s) we are reshaping.
         # Therefore, we do not need to compute the gradients of the parameters that we are not changing
-        # if use_pretrained == True:
-        #     for param in self.model_ft.parameters():
-        #         param.requires_grad = False
+        if use_pretrained == True:
+            for param in self.model_ft.parameters():
+                param.requires_grad = False
         # Initialize the new layer and by default the new parameters have .requires_grad=True
         # Change the input and output of the last layer
         num_ftrs = self.model_ft.fc.in_features
@@ -58,9 +59,9 @@ class ResNet50(nn.Module):
         self.model_ft = models.resnet50(pretrained=use_pretrained)
         # Only want to update the parameters for the layer(s) we are reshaping.
         # Therefore, we do not need to compute the gradients of the parameters that we are not changing
-        # if use_pretrained == True:
-        #     for param in self.model_ft.parameters():
-        #         param.requires_grad = False
+        if use_pretrained == True:
+            for param in self.model_ft.parameters():
+                param.requires_grad = False
         # Initialize the new layer and by default the new parameters have .requires_grad=True
         # Change the input and output of the last layer
         num_ftrs = self.model_ft.fc.in_features
@@ -80,7 +81,7 @@ def Train(model, train_loader, optimizer, loss_function):
     correct = 0
     for x, y in tqdm(train_loader):
         # put data into gpu(cpu) enviroment
-        image = x.to(device, dtype=torch.float)
+        image = x.to(device, dtype=torch.float32)
         label = y.to(device, dtype=torch.long)
         # initial optimizer, clear gradient
         optimizer.zero_grad()
@@ -107,14 +108,15 @@ def Test(model, test_loader):
     batch_pred = []
     for x, y in tqdm(test_loader):
         # put data into gpu(cpu) enviroment
-        image = x.to(device, dtype=torch.float)
+        image = x.to(device, dtype=torch.float32)
         label = y.to(device, dtype=torch.long)
         # put data into the model to predict
         pred = model(image)
+        pred_result = pred.argmax(dim=1).cpu()
         # argmax to find the predict class with max value and compare to the truth
-        correct += (label == pred.argmax(dim=1)).sum().item()
+        correct += (label.cpu() == pred_result).sum()
         # save the prediction
-        batch_pred.append(pred)
+        batch_pred.append(pred_result)
     return correct / num, batch_pred
 
 
@@ -127,11 +129,20 @@ def TrainAndTest(model_name, train_loader, test_loader, Learning_rate, epoch, pr
     # Build the model
     if model_name == 'ResNet18':
         model = ResNet18(use_pretrained=pretrain).to(device)
+        best_model = copy.deepcopy(model)
     elif model_name == 'ResNet50':
         model = ResNet50(use_pretrained=pretrain).to(device)
+        best_model = copy.deepcopy(model)
     # Loss function and Optimizer
     Loss = nn.CrossEntropyLoss()
     Optimizer = torch.optim.SGD(model.parameters(), lr=Learning_rate, momentum=0.9, weight_decay=5e-4)
+    # feature extraction of pretrain model
+    if pretrain == True:
+        for i in range(3):
+            train_loss, train_acc = Train(model, train_loader, Optimizer, Loss)
+            # test_acc, prediction = Test(model, test_loader)
+        for param in model.parameters():
+            param.requires_grad = True
     # Train and Test
     for i in range(epoch):
         train_loss, train_acc = Train(model, train_loader, Optimizer, Loss)
@@ -146,7 +157,7 @@ def TrainAndTest(model_name, train_loader, test_loader, Learning_rate, epoch, pr
             highest_acc = test_acc
             best_pred = prediction
     # Save the best model
-    torch.save(best_model.state_dict(), f'./model/{model_name}_{pretrain}_2.pt')
+    torch.save(best_model.state_dict(), os.path.join('./model', f'{model_name}_{pretrain}_2.pt'))
     return train_losslog, train_acclog, test_acclog, highest_acc, best_pred
 
 
@@ -163,7 +174,7 @@ def Plot_Acc(model, epoch, train_acc, test_acc):
     plt.plot(range(epoch), test_acc[1], color='darkorange', label='Test(w/o pretraining)')
     plt.legend(loc='upper left')
     plt.show()
-    plt.savefig(f"./result/comparision_{model}_1.jpg")
+    plt.savefig(os.path.join("./result", f'comparision_{model}_2.jpg'))
 
 
 def PlotMatrix(model, acc):
@@ -186,7 +197,7 @@ def PlotMatrix(model, acc):
     # Create colorbar
     cbar = ax.figure.colorbar(im, ax=ax)
     plt.show()
-    plt.savefig(f"./result/matrix_{model}_1.jpg")
+    plt.savefig(os.path.join("./result", f"matrix_{model}_2.jpg"))
 
 
 def ConfusionMatrix(model, acc, prediction, truth):
@@ -205,7 +216,7 @@ def ConfusionMatrix(model, acc, prediction, truth):
     for img, label in truth:
         for num in range(len(label)):
             i = label[num]
-            j = pred[batch_num][num].argmax()
+            j = pred[batch_num][num]
             math_rate[int(i)][int(j)] += 1
         batch_num += 1
     math_rate /= np.sum(math_rate, axis=1).reshape(-1,1)
@@ -216,7 +227,7 @@ def ConfusionMatrix(model, acc, prediction, truth):
 if __name__ == "__main__":
     # Hyperparameters
     data_path = "./data"
-    BATCH_SIZE = 32
+    BATCH_SIZE = 16
     Learning_rate = 1e-3
     Epochs = [15, 10] # Resnet18 = 10, Resnet50 = 5
     
@@ -237,6 +248,7 @@ if __name__ == "__main__":
 
     ## ResNet18
     # Pretrain model
+    
     pre18_train_losslog, pre18_train_acclog, pre18_test_acclog, pre18_highest_acc, pre18_best_pred = TrainAndTest('ResNet18', train_loader, test_loader, Learning_rate, Epochs[0], True)
     train_acclog.append(pre18_train_acclog)
     test_acclog.append(pre18_test_acclog)
@@ -274,3 +286,4 @@ if __name__ == "__main__":
     Plot_Acc('ResNet50', Epochs[1], train_acclog, test_acclog)
     # Confusion matrix for best model
     ConfusionMatrix('ResNet50', highest_acc, best_pred, test_loader)
+

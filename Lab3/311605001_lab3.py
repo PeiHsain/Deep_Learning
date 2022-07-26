@@ -230,11 +230,6 @@ if __name__ == "__main__":
     BATCH_SIZE = 16
     Learning_rate = 1e-3
     Epochs = [15, 10] # Resnet18 = 10, Resnet50 = 5
-    
-    train_acclog = []
-    test_acclog = []
-    highest_acc = []
-    best_pred = []
 
     # Data preprocess. Prepare image data for learning
     train_dataset = RetinopathyLoader(data_path, "train")
@@ -244,6 +239,10 @@ if __name__ == "__main__":
     test_loader = DataLoaderX(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     ## ResNet18
+    train_acclog = []
+    test_acclog = []
+    highest_acc = []
+    best_pred = []
     # Pretrain model
     pre18_train_losslog, pre18_train_acclog, pre18_test_acclog, pre18_highest_acc, pre18_best_pred = TrainAndTest('ResNet18', train_loader, test_loader, Learning_rate, Epochs[0], True)
     train_acclog.append(pre18_train_acclog)
@@ -264,6 +263,10 @@ if __name__ == "__main__":
     ConfusionMatrix('ResNet18', highest_acc, best_pred, test_loader)
 
     ## ResNet50
+    train_acclog = []
+    test_acclog = []
+    highest_acc = []
+    best_pred = []
     # Pretrain model
     pre50_train_losslog, pre50_train_acclog, pre50_test_acclog, pre50_highest_acc, pre50_best_pred = TrainAndTest('ResNet50', train_loader, test_loader, Learning_rate, Epochs[1], True)
     train_acclog.append(pre50_train_acclog)

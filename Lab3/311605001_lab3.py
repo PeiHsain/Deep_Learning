@@ -157,7 +157,7 @@ def TrainAndTest(model_name, train_loader, test_loader, Learning_rate, epoch, pr
             highest_acc = test_acc
             best_pred = prediction
     # Save the best model
-    torch.save(best_model.state_dict(), os.path.join('./model', f'{model_name}_{pretrain}_2.pt'))
+    torch.save(best_model.state_dict(), os.path.join('./model', f'{model_name}_{pretrain}_3.pt'))
     return train_losslog, train_acclog, test_acclog, highest_acc, best_pred
 
 
@@ -174,7 +174,7 @@ def Plot_Acc(model, epoch, train_acc, test_acc):
     plt.plot(range(epoch), test_acc[1], color='darkorange', label='Test(w/o pretraining)')
     plt.legend(loc='upper left')
     plt.show()
-    plt.savefig(os.path.join("./result", f'comparision_{model}_2.jpg'))
+    plt.savefig(os.path.join("./result", f'comparision_{model}_3.jpg'))
 
 
 def PlotMatrix(model, acc):
@@ -197,7 +197,7 @@ def PlotMatrix(model, acc):
     # Create colorbar
     cbar = ax.figure.colorbar(im, ax=ax)
     plt.show()
-    plt.savefig(os.path.join("./result", f"matrix_{model}_2.jpg"))
+    plt.savefig(os.path.join("./result", f"matrix_{model}_3.jpg"))
 
 
 def ConfusionMatrix(model, acc, prediction, truth):
@@ -205,7 +205,7 @@ def ConfusionMatrix(model, acc, prediction, truth):
     # Print the best accuracy
     print(f"Accuracy of {model} model on test set:")
     print(f"with pretrain = {acc[0]}")
-    # print(f"w/o pretrain = {acc[1]}")
+    print(f"w/o pretrain = {acc[1]}")
     # Calaulate the math rate of best model
     if acc[0] > acc[1]:
         pred = prediction[0]
@@ -243,12 +243,8 @@ if __name__ == "__main__":
     train_loader = DataLoaderX(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = DataLoaderX(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-# train_loader.dataset[0]
-# test_loader.dataset[0]
-
     ## ResNet18
     # Pretrain model
-    
     pre18_train_losslog, pre18_train_acclog, pre18_test_acclog, pre18_highest_acc, pre18_best_pred = TrainAndTest('ResNet18', train_loader, test_loader, Learning_rate, Epochs[0], True)
     train_acclog.append(pre18_train_acclog)
     test_acclog.append(pre18_test_acclog)
@@ -287,3 +283,23 @@ if __name__ == "__main__":
     # Confusion matrix for best model
     ConfusionMatrix('ResNet50', highest_acc, best_pred, test_loader)
 
+    # # Demo Part
+    # # Testing the model, 'ResNet18', 'ResNet50'
+    # model = ResNet18(use_pretrained=True).to(device)
+    # model.load_state_dict(torch.load('./model/ResNet18_True_2.pt'))
+    # acc, pre = Test(model, test_loader)
+    # print(f'The highest accuracy model = {acc}')
+
+    # ## Demo Part
+    # acc = np.zeros(2)
+    # # Testing the model, 'ResNet18', 'ResNet50'
+    # model_wi = ResNet18(use_pretrained=True).to(device)
+    # model_wi.load_state_dict(torch.load('./model/ResNet18_True_2.pt'))
+    # acc[0], pre = Test(model_wi, test_loader)
+    # model_wo = ResNet18(use_pretrained=False).to(device)
+    # model_wo.load_state_dict(torch.load('./model/ResNet18_False_2.pt'))
+    # acc[1], pre = Test(model_wo, test_loader)
+    # # print(f'The highest accuracy model = {acc}')
+    # print(f"The highest accuracy of ResNet18 model on test set:")
+    # print(f"with pretrain = {acc[0]}")
+    # print(f"w/o pretrain = {acc[1]}")

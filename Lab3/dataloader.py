@@ -34,7 +34,7 @@ class RetinopathyLoader(data.Dataset):
         self.data_transform_train = transforms.Compose([
                 transforms.Resize((265, 256)),
                 transforms.RandomVerticalFlip(),
-                # transforms.RandomHorizontalFlip(),
+                transforms.RandomHorizontalFlip(),
                 transforms.RandomRotation(degrees=30),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.3375, 0.2618, 0.1873],
@@ -74,20 +74,13 @@ class RetinopathyLoader(data.Dataset):
         """
         path = os.path.join(self.root, self.img_name[index]+".jpeg")
         PIL_img = Image.open(path).convert('RGB') # Load the image
-        # print(PIL_img.mode)
-        #img = self.data_transform(PIL_img)
         label = self.label[index]
         if self.mode == 'train':
             img = self.data_transform_train(PIL_img)
-        #     # Convert the pixel value to [0, 1]
-        #     # img = np.array(PIL_img, dtype=np.float32)
-        #     # Transpose the image shape from [H, W, C] to [C, H, W]
-        #     # img = torch.tensor(img).permute(2, 0, 1)
+            # Convert the pixel value to [0, 1]
+            # Transpose the image shape from [H, W, C] to [C, H, W]
             
         elif self.mode == 'test':
             img = self.data_transform_test(PIL_img)
-        #     # img = np.array(PIL_img, dtype=np.float32)
-            # img = torch.tensor(img).permute(2, 0, 1)
-            # img = torch.tensor(PIL_img).permute(2, 0, 1)
             # Normalize the data
         return img, label

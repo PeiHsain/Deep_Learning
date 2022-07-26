@@ -1,6 +1,9 @@
 import pandas as pd
+import torch
 from torch.utils import data
+from torchvision import transforms
 import numpy as np
+from PIL import Image
 
 
 def getData(mode):
@@ -27,10 +30,23 @@ class RetinopathyLoader(data.Dataset):
         self.root = root
         self.img_name, self.label = getData(mode)
         self.mode = mode
+        # self.data_transform_train = transforms.Compose([
+        #         # transforms.RandomVerticalFlip(),
+        #         # transforms.RandomHorizontalFlip(),
+        #         transforms.RandomRotation(degrees=35),
+        #         transforms.ToTensor(),
+        #         transforms.Normalize(mean=[0.3375, 0.2618, 0.1873],
+        #                             std=[0.2918, 0.2088, 0.1684])
+        #     ])
+        self.data_transform = transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.3375, 0.2618, 0.1873],
+                                    std=[0.2918, 0.2088, 0.1684])
+            ])
         print("> Found %d images..." % (len(self.img_name)))
 
     def __len__(self):
-        """'return the size of dataset"""
+        """return the size of dataset"""
         return len(self.img_name)
 
     def __getitem__(self, index):
@@ -53,5 +69,21 @@ class RetinopathyLoader(data.Dataset):
                          
             step4. Return processed image and label
         """
-
+        path = f"{self.root}\{self.img_name[index]}.jpeg"
+        PIL_img = Image.open(path).convert('RGB') # Load the image
+        # print(PIL_img.mode)
+        img = self.data_transform(PIL_img)
+        label = self.label[index]
+        # if self.mode == 'train':
+        #     # Convert the pixel value to [0, 1]
+        #     # img = np.array(PIL_img, dtype=np.float32)
+        #     # Transpose the image shape from [H, W, C] to [C, H, W]
+        #     # img = torch.tensor(img).permute(2, 0, 1)
+            
+        # elif self.mode == 'test':
+        #     img = self.data_transform_test(PIL_img)
+        #     # img = np.array(PIL_img, dtype=np.float32)
+            # img = torch.tensor(img).permute(2, 0, 1)
+            # img = torch.tensor(PIL_img).permute(2, 0, 1)
+            # Normalize the data
         return img, label

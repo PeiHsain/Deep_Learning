@@ -16,10 +16,16 @@ from torch.utils.data import DataLoader
 from torchvision import models
 from dataloader import RetinopathyLoader
 from tqdm import tqdm
+from prefetch_generator import BackgroundGenerator
 
 # Check the GPU is avialible, else use the CPU
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
+
+
+class DataLoaderX(DataLoader):
+    def __iter__(self):
+        return BackgroundGenerator(super().__iter__())
 
 
 class ResNet18(nn.Module):
@@ -223,8 +229,8 @@ if __name__ == "__main__":
     train_dataset = RetinopathyLoader(data_path, "train")
     test_dataset = RetinopathyLoader(data_path, "test")
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    train_loader = DataLoaderX(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+    test_loader = DataLoaderX(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
 # train_loader.dataset[0]
 # test_loader.dataset[0]

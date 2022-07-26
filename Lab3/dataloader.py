@@ -32,7 +32,7 @@ class RetinopathyLoader(data.Dataset):
         self.img_name, self.label = getData(mode)
         self.mode = mode
         self.data_transform_train = transforms.Compose([
-                transforms.Resize((265, 256)),
+                transforms.Resize((256, 256)),
                 transforms.RandomVerticalFlip(),
                 transforms.RandomHorizontalFlip(),
                 transforms.RandomRotation(degrees=30),

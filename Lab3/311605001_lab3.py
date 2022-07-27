@@ -138,7 +138,7 @@ def TrainAndTest(model_name, train_loader, test_loader, Learning_rate, epoch, pr
     Optimizer = torch.optim.SGD(model.parameters(), lr=Learning_rate, momentum=0.9, weight_decay=5e-4)
     # feature extraction of pretrain model
     if pretrain == True:
-        for i in range(3):
+        for i in range(5):
             train_loss, train_acc = Train(model, train_loader, Optimizer, Loss)
             # test_acc, prediction = Test(model, test_loader)
         for param in model.parameters():
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     data_path = "./data"
     BATCH_SIZE = 16
     Learning_rate = 1e-3
-    Epochs = [15, 10] # Resnet18 = 10, Resnet50 = 5
+    Epochs = [20, 20] # Resnet18 = 10, Resnet50 = 5
 
     # Data preprocess. Prepare image data for learning
     train_dataset = RetinopathyLoader(data_path, "train")
@@ -238,29 +238,29 @@ if __name__ == "__main__":
     train_loader = DataLoaderX(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = DataLoaderX(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-    # ## ResNet18
-    # train_acclog = []
-    # test_acclog = []
-    # highest_acc = []
-    # best_pred = []
-    # # Pretrain model
-    # pre18_train_losslog, pre18_train_acclog, pre18_test_acclog, pre18_highest_acc, pre18_best_pred = TrainAndTest('ResNet18', train_loader, test_loader, Learning_rate, Epochs[0], True)
-    # train_acclog.append(pre18_train_acclog)
-    # test_acclog.append(pre18_test_acclog)
-    # highest_acc.append(pre18_highest_acc)
-    # best_pred.append(pre18_best_pred)
+    ## ResNet18
+    train_acclog = []
+    test_acclog = []
+    highest_acc = []
+    best_pred = []
+    # Pretrain model
+    pre18_train_losslog, pre18_train_acclog, pre18_test_acclog, pre18_highest_acc, pre18_best_pred = TrainAndTest('ResNet18', train_loader, test_loader, Learning_rate, Epochs[0], True)
+    train_acclog.append(pre18_train_acclog)
+    test_acclog.append(pre18_test_acclog)
+    highest_acc.append(pre18_highest_acc)
+    best_pred.append(pre18_best_pred)
 
-    # # No pretrain model
-    # no18_train_losslog, no18_train_acclog, no18_test_acclog, no18_highest_acc, no18_best_pred = TrainAndTest('ResNet18', train_loader, test_loader, Learning_rate, Epochs[0], False)
-    # train_acclog.append(no18_train_acclog)
-    # test_acclog.append(no18_test_acclog)
-    # highest_acc.append(no18_highest_acc)
-    # best_pred.append(no18_best_pred)
+    # No pretrain model
+    no18_train_losslog, no18_train_acclog, no18_test_acclog, no18_highest_acc, no18_best_pred = TrainAndTest('ResNet18', train_loader, test_loader, Learning_rate, Epochs[0], False)
+    train_acclog.append(no18_train_acclog)
+    test_acclog.append(no18_test_acclog)
+    highest_acc.append(no18_highest_acc)
+    best_pred.append(no18_best_pred)
 
-    # # Comparision figure
-    # Plot_Acc('ResNet18', Epochs[0], train_acclog, test_acclog)
-    # # Confusion matrix for best model
-    # ConfusionMatrix('ResNet18', highest_acc, best_pred, test_loader)
+    # Comparision figure
+    Plot_Acc('ResNet18', Epochs[0], train_acclog, test_acclog)
+    # Confusion matrix for best model
+    ConfusionMatrix('ResNet18', highest_acc, best_pred, test_loader)
 
     ## ResNet50
     train_acclog = []
@@ -288,21 +288,7 @@ if __name__ == "__main__":
 
     # # Demo Part
     # # Testing the model, 'ResNet18', 'ResNet50'
-    # model = ResNet18(use_pretrained=True).to(device)
-    # model.load_state_dict(torch.load('./model/ResNet18_True_2.pt'))
+    # model = ResNet50(use_pretrained=True).to(device)
+    # model.load_state_dict(torch.load('./model/ResNet50_True_3.pt'))
     # acc, pre = Test(model, test_loader)
     # print(f'The highest accuracy model = {acc}')
-
-    # ## Demo Part
-    # acc = np.zeros(2)
-    # # Testing the model, 'ResNet18', 'ResNet50'
-    # model_wi = ResNet18(use_pretrained=True).to(device)
-    # model_wi.load_state_dict(torch.load('./model/ResNet18_True_2.pt'))
-    # acc[0], pre = Test(model_wi, test_loader)
-    # model_wo = ResNet18(use_pretrained=False).to(device)
-    # model_wo.load_state_dict(torch.load('./model/ResNet18_False_2.pt'))
-    # acc[1], pre = Test(model_wo, test_loader)
-    # # print(f'The highest accuracy model = {acc}')
-    # print(f"The highest accuracy of ResNet18 model on test set:")
-    # print(f"with pretrain = {acc[0]}")
-    # print(f"w/o pretrain = {acc[1]}")

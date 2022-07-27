@@ -157,7 +157,7 @@ def TrainAndTest(model_name, train_loader, test_loader, Learning_rate, epoch, pr
             highest_acc = test_acc
             best_pred = prediction
     # Save the best model
-    torch.save(best_model.state_dict(), os.path.join('./model', f'{model_name}_{pretrain}_3.pt'))
+    torch.save(best_model.state_dict(), os.path.join('./model', f'{model_name}_{pretrain}_4.pt'))
     return train_losslog, train_acclog, test_acclog, highest_acc, best_pred
 
 
@@ -174,7 +174,7 @@ def Plot_Acc(model, epoch, train_acc, test_acc):
     plt.plot(range(epoch), test_acc[1], color='darkorange', label='Test(w/o pretraining)')
     plt.legend(loc='upper left')
     # plt.show()
-    plt.savefig(os.path.join("./result", f'comparision_{model}_3.jpg'))
+    plt.savefig(os.path.join("./result", f'comparision_{model}_4.jpg'))
 
 
 def PlotMatrix(model, acc):
@@ -197,7 +197,7 @@ def PlotMatrix(model, acc):
     # Create colorbar
     cbar = ax.figure.colorbar(im, ax=ax)
     # plt.show()
-    plt.savefig(os.path.join("./result", f"matrix_{model}_3.jpg"))
+    plt.savefig(os.path.join("./result", f"matrix_{model}_4.jpg"))
 
 
 def ConfusionMatrix(model, acc, prediction, truth):
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     data_path = "./data"
     BATCH_SIZE = 16
     Learning_rate = 1e-3
-    Epochs = [20, 20] # Resnet18 = 10, Resnet50 = 5
+    Epochs = [15, 15] # Resnet18 = 10, Resnet50 = 5
 
     # Data preprocess. Prepare image data for learning
     train_dataset = RetinopathyLoader(data_path, "train")

@@ -173,7 +173,7 @@ def Plot_Acc(model, epoch, train_acc, test_acc):
     plt.plot(range(epoch), train_acc[1], color='lime', label='Train(w/o pretraining)')
     plt.plot(range(epoch), test_acc[1], color='darkorange', label='Test(w/o pretraining)')
     plt.legend(loc='upper left')
-    plt.show()
+    # plt.show()
     plt.savefig(os.path.join("./result", f'comparision_{model}_3.jpg'))
 
 
@@ -196,7 +196,7 @@ def PlotMatrix(model, acc):
             text = ax.text(j, i, np.round(acc[i, j], 2), ha="center", va="center")
     # Create colorbar
     cbar = ax.figure.colorbar(im, ax=ax)
-    plt.show()
+    # plt.show()
     plt.savefig(os.path.join("./result", f"matrix_{model}_3.jpg"))
 
 
@@ -238,29 +238,29 @@ if __name__ == "__main__":
     train_loader = DataLoaderX(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = DataLoaderX(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-    ## ResNet18
-    train_acclog = []
-    test_acclog = []
-    highest_acc = []
-    best_pred = []
-    # Pretrain model
-    pre18_train_losslog, pre18_train_acclog, pre18_test_acclog, pre18_highest_acc, pre18_best_pred = TrainAndTest('ResNet18', train_loader, test_loader, Learning_rate, Epochs[0], True)
-    train_acclog.append(pre18_train_acclog)
-    test_acclog.append(pre18_test_acclog)
-    highest_acc.append(pre18_highest_acc)
-    best_pred.append(pre18_best_pred)
+    # ## ResNet18
+    # train_acclog = []
+    # test_acclog = []
+    # highest_acc = []
+    # best_pred = []
+    # # Pretrain model
+    # pre18_train_losslog, pre18_train_acclog, pre18_test_acclog, pre18_highest_acc, pre18_best_pred = TrainAndTest('ResNet18', train_loader, test_loader, Learning_rate, Epochs[0], True)
+    # train_acclog.append(pre18_train_acclog)
+    # test_acclog.append(pre18_test_acclog)
+    # highest_acc.append(pre18_highest_acc)
+    # best_pred.append(pre18_best_pred)
 
-    # No pretrain model
-    no18_train_losslog, no18_train_acclog, no18_test_acclog, no18_highest_acc, no18_best_pred = TrainAndTest('ResNet18', train_loader, test_loader, Learning_rate, Epochs[0], False)
-    train_acclog.append(no18_train_acclog)
-    test_acclog.append(no18_test_acclog)
-    highest_acc.append(no18_highest_acc)
-    best_pred.append(no18_best_pred)
+    # # No pretrain model
+    # no18_train_losslog, no18_train_acclog, no18_test_acclog, no18_highest_acc, no18_best_pred = TrainAndTest('ResNet18', train_loader, test_loader, Learning_rate, Epochs[0], False)
+    # train_acclog.append(no18_train_acclog)
+    # test_acclog.append(no18_test_acclog)
+    # highest_acc.append(no18_highest_acc)
+    # best_pred.append(no18_best_pred)
 
-    # Comparision figure
-    Plot_Acc('ResNet18', Epochs[0], train_acclog, test_acclog)
-    # Confusion matrix for best model
-    ConfusionMatrix('ResNet18', highest_acc, best_pred, test_loader)
+    # # Comparision figure
+    # Plot_Acc('ResNet18', Epochs[0], train_acclog, test_acclog)
+    # # Confusion matrix for best model
+    # ConfusionMatrix('ResNet18', highest_acc, best_pred, test_loader)
 
     ## ResNet50
     train_acclog = []

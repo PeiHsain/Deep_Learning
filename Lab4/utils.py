@@ -197,6 +197,14 @@ def save_pred(x, epoch, path):
     cat_img.save(os.path.join(file_name, f'prediction.jpg'))
 
 
+def get_concat(img1, img2):
+    'Concatenate two images in horizontal.'
+    dst = Image.new('RGB', (img1.width + img2.width, img1.height))
+    dst.paste(img1, (0, 0))
+    dst.paste(img2, (img1.width, 0))
+    return dst
+
+
 def gif_cat(gt, epoch, path):
     'Concatenate the gif image of the prediction and the ground truth.'
     # the path of saved image
@@ -211,7 +219,6 @@ def gif_cat(gt, epoch, path):
             image_list.append(image_name)
     # convert the string before "." into the number and be as a key to sort
     image_list.sort(key=lambda x: int(x.split('.')[0]))
-
     # conbine ground truth img and predicted img
     gt = gt.permute(0, 2, 3, 1).cpu().numpy()
     frames = []
@@ -223,11 +230,7 @@ def gif_cat(gt, epoch, path):
         # predicted img
         img2 = Image.open(os.path.join(file_name, im))
         # creating a new image and pasting 
-        cat_img = Image.new("RGB", (img1.width + img2.width, img1.height))
-        # pasting the first image (image_name, (position))
-        cat_img.paste(img1, (0, 0))
-        # pasting the second image (image_name, (position))
-        cat_img.paste(img2, (img1.width, 0))        
+        cat_img = get_concat(img1, img2)        
         frames.append(cat_img)
         i += 1
     # duration, set image changing time (sec)

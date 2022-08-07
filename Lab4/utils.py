@@ -156,7 +156,7 @@ def pred(x, cond, modules, args):
             x_past = x[:, i]
         else: # predict last frame, time t-1
             # get z by normal distribution
-            z_t = torch.FloatTensor(args.batch_size, args.z_dim).normal_()
+            z_t = torch.cuda.FloatTensor(args.batch_size, args.z_dim).normal_()
             # get latent vector
             z_cond_cat = torch.cat((h_past, z_t, c_t), axis=1)
             f_pred = modules['frame_predictor'](z_cond_cat)
@@ -165,26 +165,26 @@ def pred(x, cond, modules, args):
 
         pred_seq.append(x_past.detach().cpu().numpy())
     # (1, n_eval, batch_size, 64, 64) -> (1, batch_size, n_eval, 64, 64)
-    print(pred_seq.size())
-    pred_seq = torch.tensor(pred_seq).permute(1, 0, 2, 3, 4)
+    # print(len(pred_seq))
+    pred_seq = torch.tensor(np.array(pred_seq)).permute(1, 0, 2, 3, 4)
     return pred_seq
 
 
 def plot_pred(x, cond, modules, epoch, args):
     'Plot the predicted images.'
     prediction = pred(x, cond, modules, args)
-    save_image(prediction[0], epoch)
-    pred_gif = save_gif(prediction[0])
-    ground_truth_gif = save_gif(x[0])
+    save_pred(prediction[0], epoch)
+    # pred_gif = save_gif(prediction[0])
+    # ground_truth_gif = save_gif(x[0])
 
 
 
 def save_pred(x, epoch):
     'Save the predicted image.'
+    print(x.size())
 
 
-
-def save_gif(x):
+def save_gif(x, name):
     'Save the gif image.'
     image_list = []
     # the path of saved .png image
@@ -196,7 +196,7 @@ def save_gif(x):
     image_list.sort(key=lambda x: int(x.split('.')[0]))
 
     # the name of .gif
-    gif_name = f'./results/{}/.gif'
+    gif_name = f'./results/{name}.gif'
     # create gif
     frames = []
     for im in image_list:

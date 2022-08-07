@@ -32,10 +32,10 @@ def parse_args():
     parser.add_argument('--batch_size', default=12, type=int, help='batch size')
     parser.add_argument('--log_dir', default='./logs/fp', help='base directory to save logs')
     parser.add_argument('--model_dir', default='', help='base directory to save logs')
-    parser.add_argument('--data_root', default='./data/processed_data', help='root directory for data')
+    parser.add_argument('--data_root', default='.', help='root directory for data')
     parser.add_argument('--optimizer', default='adam', help='optimizer to train with')
-    parser.add_argument('--niter', type=int, default=300, help='number of epochs to train for')
-    parser.add_argument('--epoch_size', type=int, default=300, help='epoch size')
+    parser.add_argument('--niter', type=int, default=10, help='number of epochs to train for')
+    parser.add_argument('--epoch_size', type=int, default=10, help='epoch size')
     parser.add_argument('--tfr', type=float, default=1.0, help='teacher forcing ratio (0 ~ 1)')
     parser.add_argument('--tfr_start_decay_epoch', type=int, default=50, help='The epoch that teacher forcing ratio become decreasing')
     parser.add_argument('--tfr_decay_step', type=float, default=(1/200), help='The decay step size of teacher forcing ratio (0 ~ 1)')
@@ -52,6 +52,7 @@ def parse_args():
     parser.add_argument('--predictor_rnn_layers', type=int, default=2, help='number of layers')
     parser.add_argument('--z_dim', type=int, default=64, help='dimensionality of z_t')
     parser.add_argument('--g_dim', type=int, default=128, help='dimensionality of encoder output vector and decoder input vector')
+    parser.add_argument('--cond_dim', type=int, default=7, help='dimensionality of condition')
     parser.add_argument('--beta', type=float, default=0.0001, help='weighting on KL to prior')
     parser.add_argument('--num_workers', type=int, default=4, help='number of data loading threads')
     parser.add_argument('--last_frame_skip', action='store_true', help='if true, skip connections go between frame t and frame t+t rather than last ground truth frame')
@@ -74,12 +75,12 @@ def train(x, cond, modules, optimizer, kl_anneal, args, epoch):
     mse = 0
     kld = 0
     use_teacher_forcing = True if random.random() < args.tfr else False
-    print("Teacher force: ", use_teacher_forcing)
+    # print("Teacher force: ", use_teacher_forcing)
 
     # x -> 30 frame(batch, frame, 3, 64x64)
-    print("x size: ", x.size())
+    # print("x size: ", x.size())
     # cond -> 30 frame with 4 action and 3 position (batch, frame, 7)
-    print("cond size: ", cond.size())
+    # print("cond size: ", cond.size())
     # inference model
     h = [modules['encoder'](x[:, i]) for i in range(args.n_past + args.n_future)]
     
@@ -101,7 +102,9 @@ def train(x, cond, modules, optimizer, kl_anneal, args, epoch):
 
         # reparameter
         z_t, mu, logvar = modules['posterior'](h_t)
-        
+        # print("z size: ", z_t.size())
+        # print("c size: ", c_t.size())
+        # print("h_past size: ", h_past.size())
         # predict frame, time t-1 for encoder
         # concatenate the condition part with the latent vector (CVAE), cond + Ht-1 + Zt
         z_cond_cat = torch.cat((h_past, z_t, c_t), axis=1)
@@ -112,7 +115,7 @@ def train(x, cond, modules, optimizer, kl_anneal, args, epoch):
         # kl divergence loss
         kld += kl_criterion(mu, logvar, args)
         # MSE loss (reconstruction loss)
-        mse += nn.MSELoss(x_pred, x_gt)
+        mse += nn.MSELoss()(x_pred, x_gt)
         # raise NotImplementedError
 
     # kl cost annealing
@@ -123,7 +126,7 @@ def train(x, cond, modules, optimizer, kl_anneal, args, epoch):
 
     optimizer.step()
 
-    return loss.detach().cpu().numpy() / (args.n_past + args.n_future), mse.detach().cpu().numpy() / (args.n_past + args.n_future), kld.detach().cpu().numpy() / (args.n_future + args.n_past), beta.detach().cpu().numpy()
+    return loss.detach().cpu().numpy() / (args.n_past + args.n_future), mse.detach().cpu().numpy() / (args.n_past + args.n_future), kld.detach().cpu().numpy() / (args.n_future + args.n_past), beta
 
 
 class kl_annealing():
@@ -209,7 +212,7 @@ def main():
         frame_predictor = saved_model['frame_predictor']
         posterior = saved_model['posterior']
     else:
-        frame_predictor = lstm(args.g_dim+args.z_dim, args.g_dim, args.rnn_size, args.predictor_rnn_layers, args.batch_size, device)
+        frame_predictor = lstm(args.g_dim+args.z_dim+args.cond_dim, args.g_dim, args.rnn_size, args.predictor_rnn_layers, args.batch_size, device)
         posterior = gaussian_lstm(args.g_dim, args.z_dim, args.rnn_size, args.posterior_rnn_layers, args.batch_size, device)
         frame_predictor.apply(init_weights)
         posterior.apply(init_weights)
@@ -232,7 +235,7 @@ def main():
     # --------- load a dataset ------------------------------------
     train_data = bair_robot_pushing_dataset(args, 'train')
     validate_data = bair_robot_pushing_dataset(args, 'validate')
-    train_loader = DataLoaderX(train_data,
+    train_loader = DataLoader(train_data,
                             num_workers=args.num_workers,
                             batch_size=args.batch_size,
                             shuffle=True,
@@ -240,7 +243,7 @@ def main():
                             pin_memory=True)
     train_iterator = iter(train_loader)
 
-    validate_loader = DataLoaderX(validate_data,
+    validate_loader = DataLoader(validate_data,
                             num_workers=args.num_workers,
                             batch_size=args.batch_size,
                             shuffle=True,
@@ -271,6 +274,7 @@ def main():
     }
     # --------- training loop ------------------------------------
 
+    os.makedirs("./results", exist_ok=True)
     progress = tqdm(total=args.niter)
     best_val_psnr = 0
     # save the results of each epoch
@@ -370,7 +374,7 @@ def main():
             except StopIteration:
                 validate_iterator = iter(validate_loader)
                 validate_seq, validate_cond = next(validate_iterator)
-
+            validate_seq, validate_cond = validate_seq.to(device, dtype=torch.float32), validate_cond.to(device, dtype=torch.float32)
             plot_pred(validate_seq, validate_cond, modules, epoch, args)
     plot_figure(KLD, KLBeta, TFR, MSE, Loss, args)
     plot_PSNR(PSNR)

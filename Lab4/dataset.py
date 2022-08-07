@@ -42,7 +42,7 @@ class bair_robot_pushing_dataset(Dataset):
         
     def get_seq(self):
         if self.ordered:
-            self.cur_dir = self.dirs[self.d]
+            self.cur_dir = self.dirs[self.idx]
             if self.idx == len(self.dirs) - 1:
                 self.idx = 0
             else:

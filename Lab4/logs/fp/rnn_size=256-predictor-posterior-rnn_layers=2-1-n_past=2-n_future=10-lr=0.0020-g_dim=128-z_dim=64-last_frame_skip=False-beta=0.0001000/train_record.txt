@@ -1,0 +1,13 @@
+args: Namespace(lr=0.002, beta1=0.9, batch_size=12, log_dir='./logs/fp/rnn_size=256-predictor-posterior-rnn_layers=2-1-n_past=2-n_future=10-lr=0.0020-g_dim=128-z_dim=64-last_frame_skip=False-beta=0.0001000', model_dir='', data_root='.', optimizer='adam', niter=10, epoch_size=10, tfr=1.0, tfr_start_decay_epoch=50, tfr_decay_step=0.005, tfr_lower_bound=0.1, kl_anneal_cyclical=False, kl_anneal_ratio=0.5, kl_anneal_cycle=3, seed=1, n_past=2, n_future=10, n_eval=12, rnn_size=256, posterior_rnn_layers=1, predictor_rnn_layers=2, z_dim=64, g_dim=128, cond_dim=7, beta=0.0001, num_workers=4, last_frame_skip=False, cuda=True)
+[epoch: 00] loss: 0.02379 | mse loss: 0.02379 | kld loss: 0.10756
+====================== validate psnr = 17.81480 ========================
+[epoch: 01] loss: 0.03469 | mse loss: 0.01399 | kld loss: 0.06901
+[epoch: 02] loss: 0.01363 | mse loss: 0.01166 | kld loss: 0.00328
+[epoch: 03] loss: 0.01248 | mse loss: 0.01173 | kld loss: 0.00084
+[epoch: 04] loss: 0.01126 | mse loss: 0.01072 | kld loss: 0.00054
+[epoch: 05] loss: 0.01154 | mse loss: 0.01124 | kld loss: 0.00030
+====================== validate psnr = 18.50760 ========================
+[epoch: 06] loss: 0.01155 | mse loss: 0.01138 | kld loss: 0.00017
+[epoch: 07] loss: 0.01108 | mse loss: 0.01097 | kld loss: 0.00011
+[epoch: 08] loss: 0.01092 | mse loss: 0.01086 | kld loss: 0.00006
+[epoch: 09] loss: 0.01038 | mse loss: 0.01033 | kld loss: 0.00005

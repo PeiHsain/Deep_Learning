@@ -164,7 +164,7 @@ def pred(x, cond, modules, args):
             x_past = modules['decoder']((f_pred, skip))
 
         pred_seq.append(x_past.detach().cpu().numpy())
-    # (1, n_eval, batch_size, 64, 64) -> (1, batch_size, n_eval, 64, 64)
+    # (n_eval, batch_size, 3, 64, 64) -> (batch_size, n_eval, 3, 64, 64)
     # print(len(pred_seq))
     pred_seq = torch.tensor(np.array(pred_seq)).permute(1, 0, 2, 3, 4)
     return pred_seq
@@ -173,22 +173,27 @@ def pred(x, cond, modules, args):
 def plot_pred(x, cond, modules, epoch, args):
     'Plot the predicted images.'
     prediction = pred(x, cond, modules, args)
-    save_pred(prediction[0], epoch)
-    # pred_gif = save_gif(prediction[0])
-    # ground_truth_gif = save_gif(x[0])
+    save_pred(prediction[0], epoch, args.log_dir)
+    save_gt_gif(x[0], epoch, args.log_dir, args.n_eval)
+    gif_cat(epoch, args.log_dir)
 
 
-
-def save_pred(x, epoch):
+def save_pred(x, epoch, path):
     'Save the predicted image.'
-    print(x.size())
+    # x size (frame, 3, 64, 64) -> (frame, 64, 64, 3)
+    x = x.permute(0, 2, 3, 1).numpy()
+    print("pred img: ", x[0])
+    for i in range(len(x)):
+        img = Image.fromarray(x[i], mode="RBG")
+        img.save(os.path.join(path, f'epoch{epoch}/{i}.png'))
+    save_gif(epoch, path)
 
 
-def save_gif(x, name):
-    'Save the gif image.'
+def save_gif(epoch, path):
+    'Save the gif image of the prediction.'
     image_list = []
-    # the path of saved .png image
-    file_name = "./results/"
+    # the path of saved image
+    file_name = os.path.join(path, f'epoch{epoch}')
     # take all .png imag
     for image_name in os.listdir(file_name):
         image_list.append(image_name)
@@ -196,7 +201,7 @@ def save_gif(x, name):
     image_list.sort(key=lambda x: int(x.split('.')[0]))
 
     # the name of .gif
-    gif_name = f'./results/{name}.gif'
+    gif_name = os.path.join(file_name, f'pred.gif')
     # create gif
     frames = []
     for im in image_list:
@@ -210,7 +215,42 @@ def save_gif(x, name):
     imageio.mimsave(gif_name,frames,'GIF',duration = 0.3)
 
 
-def plot_KL(kld, beta):
+def save_gt_gif(x, epoch, path, frame):
+    'Save the gif image of the ground truth.'
+    x = x.permute(0, 2, 3, 1).numpy()
+    print("gt img: ", x[0])
+    # the path of saved image
+    file_name = os.path.join(path, f'epoch{epoch}')
+    # the name of .gif
+    gif_name = os.path.join(file_name, f'gt.gif')
+    # create gif
+    frames = []
+    for i in range(frame):
+        img = Image.fromarray(x[i], mode="RBG")
+        frames.append(img)
+    # duration, set image changing time (sec)
+    imageio.mimsave(gif_name,frames,'GIF',duration = 0.3)
+
+
+def gif_cat(epoch, path):
+    'Concatenate the gif image of the prediction and the ground truth.'
+    file_name = os.path.join(path, f'epoch{epoch}')
+    # opening up of images
+    img1 = Image.open(os.path.join(file_name, f'gt.gif'))
+    img2 = Image.open(os.path.join(file_name, f'pred.gif'))
+
+    # creating a new image and pasting 
+    cat_img = Image.new("RGB", (img1.width + img2.width, img1.height))
+    # pasting the first image (image_name, (position))
+    cat_img.paste(img1, (0, 0))
+    # pasting the second image (image_name, (position))
+    cat_img.paste(img2, (img1.width, 0))
+    # save image
+    cat_img.save(os.path.join(file_name, f'concat.gif'))
+
+
+
+def plot_KL(kld, beta, dir):
     'Plot the KL loss and beta curve.'
     epoch = len(kld)
     fig, ax1 = plt.subplots()
@@ -223,16 +263,17 @@ def plot_KL(kld, beta):
     curve2, = ax2.plot(range(epoch), beta, color='darkorange', label='KL beta')
     curves = [curve1, curve2]
     ax1.legend(curves, [curve.get_label() for curve in curves], loc='upper right')
-    plt.savefig(os.path.join("./results", f'kl_1.jpg'))
+    plt.savefig(os.path.join(dir, f'kl_1.jpg'))
 
 
-def plot_PSNR(psnr):
+def plot_PSNR(psnr, dir):
     'Plot the PSNR curve.'
+    fig = plt.figure()
     plt.title(f"PSNR curve", fontsize=15)
     plt.xlabel(f"Epochs (every 5 epochs)")
     plt.ylabel(f"PSNR")
     plt.plot(range(len(psnr)), marker='o')
-    plt.savefig(os.path.join("./results", f'psnr_1.jpg'))
+    plt.savefig(os.path.join(dir, f'psnr_1.jpg'))
 
 
 def plot_figure(KLD, KLB, TFR, MSE, LOSS, args):
@@ -253,4 +294,4 @@ def plot_figure(KLD, KLB, TFR, MSE, LOSS, args):
 
     curves = [curve1, curve2, curve3, curve4, curve5]
     ratio.legend(curves, [curve.get_label() for curve in curves], loc='upper right')
-    plt.savefig(os.path.join("./results", f'figure_1.jpg'))
+    plt.savefig(os.path.join(args.log_dir, f'figure_1.jpg'))

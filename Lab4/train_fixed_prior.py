@@ -377,8 +377,8 @@ def main():
             validate_seq, validate_cond = validate_seq.to(device, dtype=torch.float32), validate_cond.to(device, dtype=torch.float32)
             plot_pred(validate_seq, validate_cond, modules, epoch, args)
     plot_figure(KLD, KLBeta, TFR, MSE, Loss, args)
-    plot_PSNR(PSNR)
-    plot_KL(KLD, KLBeta)
+    plot_PSNR(PSNR, args.log_dir)
+    plot_KL(KLD, KLBeta, args.log_dir)
 
 
 if __name__ == '__main__':

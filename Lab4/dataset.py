@@ -16,6 +16,7 @@ class bair_robot_pushing_dataset(Dataset):
         self.root = '{}/{}'.format(args.data_root, mode)
         self.seq_len = max(args.n_past + args.n_future, args.n_eval)
         self.mode = mode
+        # ordered -> read the data by the order
         if mode == 'train':
             self.ordered = False
         else:
@@ -59,6 +60,7 @@ class bair_robot_pushing_dataset(Dataset):
         return image_seq
     
     def get_csv(self):
+        # read the action information of data from csv file
         with open('{}/actions.csv'.format(self.cur_dir), newline='') as csvfile:
             rows = csv.reader(csvfile)
             actions = []
@@ -70,6 +72,7 @@ class bair_robot_pushing_dataset(Dataset):
             
             actions = torch.stack(actions)
             
+        # read the position information of data from csv file
         with open('{}/endeffector_positions.csv'.format(self.cur_dir), newline='') as csvfile:
             rows = csv.reader(csvfile)
             positions = []

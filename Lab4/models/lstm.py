@@ -58,7 +58,11 @@ class gaussian_lstm(nn.Module):
         return hidden
 
     def reparameterize(self, mu, logvar):
-        raise NotImplementedError
+        'latent vector = epx(variance)*prior + mean'
+        # raise NotImplementedError
+        std = torch.exp(0.5*logvar)
+        eps = torch.randn_like(std) # normal distribution N(0, 1)
+        return mu + eps*std
 
     def forward(self, input):
         embedded = self.embed(input)

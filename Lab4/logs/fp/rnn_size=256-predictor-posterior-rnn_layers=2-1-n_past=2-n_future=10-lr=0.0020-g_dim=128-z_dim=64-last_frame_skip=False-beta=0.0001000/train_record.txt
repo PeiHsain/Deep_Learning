@@ -1,13 +1,3 @@
-args: Namespace(lr=0.002, beta1=0.9, batch_size=12, log_dir='./logs/fp/rnn_size=256-predictor-posterior-rnn_layers=2-1-n_past=2-n_future=10-lr=0.0020-g_dim=128-z_dim=64-last_frame_skip=False-beta=0.0001000', model_dir='', data_root='.', optimizer='adam', niter=10, epoch_size=10, tfr=1.0, tfr_start_decay_epoch=50, tfr_decay_step=0.005, tfr_lower_bound=0.1, kl_anneal_cyclical=False, kl_anneal_ratio=0.5, kl_anneal_cycle=3, seed=1, n_past=2, n_future=10, n_eval=12, rnn_size=256, posterior_rnn_layers=1, predictor_rnn_layers=2, z_dim=64, g_dim=128, cond_dim=7, beta=0.0001, num_workers=4, last_frame_skip=False, cuda=True)
-[epoch: 00] loss: 0.02379 | mse loss: 0.02379 | kld loss: 0.10762
-====================== validate psnr = 17.78415 ========================
-[epoch: 01] loss: 0.03479 | mse loss: 0.01400 | kld loss: 0.06932
-[epoch: 02] loss: 0.01366 | mse loss: 0.01168 | kld loss: 0.00332
-[epoch: 03] loss: 0.01250 | mse loss: 0.01172 | kld loss: 0.00087
-[epoch: 04] loss: 0.01116 | mse loss: 0.01069 | kld loss: 0.00048
-[epoch: 05] loss: 0.01150 | mse loss: 0.01124 | kld loss: 0.00026
-====================== validate psnr = 18.42377 ========================
-[epoch: 06] loss: 0.01151 | mse loss: 0.01136 | kld loss: 0.00015
-[epoch: 07] loss: 0.01099 | mse loss: 0.01087 | kld loss: 0.00012
-[epoch: 08] loss: 0.01095 | mse loss: 0.01089 | kld loss: 0.00007
-[epoch: 09] loss: 0.01039 | mse loss: 0.01034 | kld loss: 0.00005
+args: Namespace(lr=0.002, beta1=0.9, batch_size=12, log_dir='./logs/fp/rnn_size=256-predictor-posterior-rnn_layers=2-1-n_past=2-n_future=10-lr=0.0020-g_dim=128-z_dim=64-last_frame_skip=False-beta=0.0001000', model_dir='', data_root='.', optimizer='adam', niter=1, epoch_size=10, tfr=1.0, tfr_start_decay_epoch=50, tfr_decay_step=0.005, tfr_lower_bound=0.1, kl_anneal_cyclical=False, kl_anneal_ratio=0.5, kl_anneal_cycle=3, seed=1, n_past=2, n_future=10, n_eval=12, rnn_size=256, posterior_rnn_layers=1, predictor_rnn_layers=2, z_dim=64, g_dim=128, cond_dim=7, beta=0.0001, num_workers=4, last_frame_skip=False, cuda=True)
+[epoch: 00] loss: 0.02379 | mse loss: 0.02379 | kld loss: 0.10735
+====================== validate psnr = 17.79992 ========================

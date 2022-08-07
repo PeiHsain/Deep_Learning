@@ -173,6 +173,7 @@ def pred(x, cond, modules, args):
 def plot_pred(x, cond, modules, epoch, args):
     'Plot the predicted images.'
     prediction = pred(x, cond, modules, args)
+    os.makedirs(f'{args.log_dir}/epoch{epoch}', exist_ok=True)
     save_pred(prediction[0], epoch, args.log_dir)
     save_gt_gif(x[0], epoch, args.log_dir, args.n_eval)
     gif_cat(epoch, args.log_dir)
@@ -182,9 +183,10 @@ def save_pred(x, epoch, path):
     'Save the predicted image.'
     # x size (frame, 3, 64, 64) -> (frame, 64, 64, 3)
     x = x.permute(0, 2, 3, 1).numpy()
-    print("pred img: ", x[0])
+    # print("pred img: ", x[0])
     for i in range(len(x)):
-        img = Image.fromarray(x[i], mode="RBG")
+        x[i] *= 255
+        img = Image.fromarray(np.uint8(x[i]))
         img.save(os.path.join(path, f'epoch{epoch}/{i}.png'))
     save_gif(epoch, path)
 
@@ -196,7 +198,10 @@ def save_gif(epoch, path):
     file_name = os.path.join(path, f'epoch{epoch}')
     # take all .png imag
     for image_name in os.listdir(file_name):
-        image_list.append(image_name)
+        if image_name.endswith('.png'):
+            image_list.append(image_name)
+    # print(image_list)
+    # print(int(image_list[0].split('.')[0]))
     # convert the string before "." into the number and be as a key to sort
     image_list.sort(key=lambda x: int(x.split('.')[0]))
 
@@ -209,7 +214,7 @@ def save_gif(epoch, path):
             im = os.path.join(file_name, im)
             frames.append(imageio.imread(im))
         else:
-            print("This image not .png => "+ im)
+            pssrint("This image not .png => "+ im)
 
     # duration, set image changing time (sec)
     imageio.mimsave(gif_name,frames,'GIF',duration = 0.3)
@@ -217,7 +222,7 @@ def save_gif(epoch, path):
 
 def save_gt_gif(x, epoch, path, frame):
     'Save the gif image of the ground truth.'
-    x = x.permute(0, 2, 3, 1).numpy()
+    x = x.permute(0, 2, 3, 1).cpu().numpy()
     print("gt img: ", x[0])
     # the path of saved image
     file_name = os.path.join(path, f'epoch{epoch}')
@@ -226,7 +231,8 @@ def save_gt_gif(x, epoch, path, frame):
     # create gif
     frames = []
     for i in range(frame):
-        img = Image.fromarray(x[i], mode="RBG")
+        x[i] *= 255
+        img = Image.fromarray(np.uint8(x[i]))
         frames.append(img)
     # duration, set image changing time (sec)
     imageio.mimsave(gif_name,frames,'GIF',duration = 0.3)

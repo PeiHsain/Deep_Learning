@@ -165,7 +165,6 @@ def pred(x, cond, modules, args):
 
         pred_seq.append(x_past.detach().cpu().numpy())
     # (n_eval, batch_size, 3, 64, 64) -> (batch_size, n_eval, 3, 64, 64)
-    # print(len(pred_seq))
     pred_seq = torch.tensor(np.array(pred_seq)).permute(1, 0, 2, 3, 4)
     return pred_seq
 
@@ -175,85 +174,64 @@ def plot_pred(x, cond, modules, epoch, args):
     prediction = pred(x, cond, modules, args)
     os.makedirs(f'{args.log_dir}/epoch{epoch}', exist_ok=True)
     save_pred(prediction[0], epoch, args.log_dir)
-    save_gt_gif(x[0], epoch, args.log_dir, args.n_eval)
-    gif_cat(epoch, args.log_dir)
+    gif_cat(x[0], epoch, args.log_dir)
 
 
 def save_pred(x, epoch, path):
-    'Save the predicted image.'
+    'Save the predicted image and concatenate image.'
     # x size (frame, 3, 64, 64) -> (frame, 64, 64, 3)
     x = x.permute(0, 2, 3, 1).numpy()
-    # print("pred img: ", x[0])
-    for i in range(len(x)):
-        x[i] *= 255
-        img = Image.fromarray(np.uint8(x[i]))
-        img.save(os.path.join(path, f'epoch{epoch}/{i}.png'))
-    save_gif(epoch, path)
-
-
-def save_gif(epoch, path):
-    'Save the gif image of the prediction.'
-    image_list = []
+    frame_len = len(x)
     # the path of saved image
     file_name = os.path.join(path, f'epoch{epoch}')
-    # take all .png imag
+    for i in range(frame_len):
+        x[i] *= 255
+        img = Image.fromarray(np.uint8(x[i]))
+        img.save(os.path.join(file_name, f'{i}.png'))
+        if i == 0:
+            # creating a new image and pasting 
+            cat_img = Image.new("RGB", (img.width * frame_len, img.height))
+        # pasting the image (image_name, (position))
+        cat_img.paste(img, (img.width * i, 0))
+    # save concatenate img
+    cat_img.save(os.path.join(file_name, f'prediction.jpg'))
+
+
+def gif_cat(gt, epoch, path):
+    'Concatenate the gif image of the prediction and the ground truth.'
+    # the path of saved image
+    file_name = os.path.join(path, f'epoch{epoch}')
+    # the name of .gif
+    gif_name = os.path.join(file_name, f'concat.gif')
+
+    # take predicted .png img
+    image_list = []
     for image_name in os.listdir(file_name):
         if image_name.endswith('.png'):
             image_list.append(image_name)
-    # print(image_list)
-    # print(int(image_list[0].split('.')[0]))
     # convert the string before "." into the number and be as a key to sort
     image_list.sort(key=lambda x: int(x.split('.')[0]))
 
-    # the name of .gif
-    gif_name = os.path.join(file_name, f'pred.gif')
-    # create gif
+    # conbine ground truth img and predicted img
+    gt = gt.permute(0, 2, 3, 1).cpu().numpy()
     frames = []
+    i = 0
     for im in image_list:
-        if im.endswith('.png'):
-            im = os.path.join(file_name, im)
-            frames.append(imageio.imread(im))
-        else:
-            pssrint("This image not .png => "+ im)
-
+        # ground truth img (array -> RGB PIL)
+        gt[i] *= 255
+        img1 = Image.fromarray(np.uint8(gt[i]))
+        # predicted img
+        img2 = Image.open(os.path.join(file_name, im))
+        # creating a new image and pasting 
+        cat_img = Image.new("RGB", (img1.width + img2.width, img1.height))
+        # pasting the first image (image_name, (position))
+        cat_img.paste(img1, (0, 0))
+        # pasting the second image (image_name, (position))
+        cat_img.paste(img2, (img1.width, 0))        
+        frames.append(cat_img)
+        i += 1
     # duration, set image changing time (sec)
     imageio.mimsave(gif_name,frames,'GIF',duration = 0.3)
-
-
-def save_gt_gif(x, epoch, path, frame):
-    'Save the gif image of the ground truth.'
-    x = x.permute(0, 2, 3, 1).cpu().numpy()
-    print("gt img: ", x[0])
-    # the path of saved image
-    file_name = os.path.join(path, f'epoch{epoch}')
-    # the name of .gif
-    gif_name = os.path.join(file_name, f'gt.gif')
-    # create gif
-    frames = []
-    for i in range(frame):
-        x[i] *= 255
-        img = Image.fromarray(np.uint8(x[i]))
-        frames.append(img)
-    # duration, set image changing time (sec)
-    imageio.mimsave(gif_name,frames,'GIF',duration = 0.3)
-
-
-def gif_cat(epoch, path):
-    'Concatenate the gif image of the prediction and the ground truth.'
-    file_name = os.path.join(path, f'epoch{epoch}')
-    # opening up of images
-    img1 = Image.open(os.path.join(file_name, f'gt.gif'))
-    img2 = Image.open(os.path.join(file_name, f'pred.gif'))
-
-    # creating a new image and pasting 
-    cat_img = Image.new("RGB", (img1.width + img2.width, img1.height))
-    # pasting the first image (image_name, (position))
-    cat_img.paste(img1, (0, 0))
-    # pasting the second image (image_name, (position))
-    cat_img.paste(img2, (img1.width, 0))
-    # save image
-    cat_img.save(os.path.join(file_name, f'concat.gif'))
-
 
 
 def plot_KL(kld, beta, dir):

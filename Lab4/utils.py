@@ -269,7 +269,7 @@ def plot_PSNR(psnr, dir):
     plt.title(f"PSNR curve", fontsize=15)
     plt.xlabel(f"Epochs (every 5 epochs)")
     plt.ylabel(f"PSNR")
-    plt.plot(range(len(psnr)), marker='o')
+    plt.plot(range(len(psnr)), psnr)
     plt.savefig(os.path.join(dir, f'psnr_1.jpg'))
 
 

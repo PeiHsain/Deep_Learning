@@ -230,11 +230,21 @@ def gif_cat(gt, epoch, path):
         # predicted img
         img2 = Image.open(os.path.join(file_name, im))
         # creating a new image and pasting 
-        cat_img = get_concat(img1, img2)        
-        frames.append(cat_img)
+        cat_img = get_concat(img1, img2).save(os.path.join(file_name, f"test_{i}.jpg"))        
+        # frames.append(cat_img)
+        # cat_img.save(os.path.join(file_name, f"test{i}.jpg"))
         i += 1
+    # create gif
+    #concat_list = []
+    # for im in os.listdir(file_name):
+    #     if im.startswith("test") and im.endswith(".jpg"):
+    #         concat_list.append(im)
+    # concat_list.sort(key=lambda x: int(x.split('_')[1].split('.')[0]))
+    # for im in concat_list:
+    #     im = os.path.join(file_name, im)
+    #     frames.append(imageio.imread(im))
     # duration, set image changing time (sec)
-    imageio.mimsave(gif_name,frames,'GIF',duration = 0.3)
+    # imageio.mimsave(gif_name,frames,'GIF',duration=0.3)
 
 
 def plot_KL(kld, beta, dir):

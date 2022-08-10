@@ -32,7 +32,7 @@ def parse_args():
     parser.add_argument('--batch_size', default=12, type=int, help='batch size')
     parser.add_argument('--log_dir', default='./logs/fp', help='base directory to save logs')
     parser.add_argument('--model_dir', default='', help='base directory to save logs')
-    parser.add_argument('--data_root', default='.', help='root directory for data')
+    parser.add_argument('--data_root', default='../../processed_data', help='root directory for data')
     parser.add_argument('--optimizer', default='adam', help='optimizer to train with')
     parser.add_argument('--niter', type=int, default=300, help='number of epochs to train for')
     parser.add_argument('--epoch_size', type=int, default=600, help='epoch size')
@@ -349,7 +349,7 @@ def main():
                 _, _, psnr = finn_eval_seq(validate_seq[:, args.n_past:], pred_seq[:, args.n_past:])
                 psnr_list.append(psnr)
                 
-            ave_psnr = np.mean(np.concatenate(psnr))
+            ave_psnr = np.mean(np.concatenate(psnr_list))
 
             with open('./{}/train_record.txt'.format(args.log_dir), 'a') as train_record:
                 train_record.write(('====================== validate psnr = {:.5f} ========================\n'.format(ave_psnr)))

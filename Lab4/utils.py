@@ -173,8 +173,8 @@ def plot_pred(x, cond, modules, epoch, args):
     'Plot the predicted images.'
     prediction = pred(x, cond, modules, args)
     os.makedirs(f'{args.log_dir}/epoch{epoch}', exist_ok=True)
-    save_pred(prediction[0], epoch, args.log_dir)
-    gif_cat(x[0], epoch, args.log_dir)
+    save_pred(prediction[5], epoch, args.log_dir)
+    gif_cat(x[5], epoch, args.log_dir)
 
 
 def save_pred(x, epoch, path):
@@ -231,20 +231,7 @@ def gif_cat(gt, epoch, path):
         img2 = Image.open(os.path.join(file_name, im))
         # creating a new image and pasting 
         cat_img = get_concat(img1, img2).save(os.path.join(file_name, f"test_{i}.jpg"))        
-        # frames.append(cat_img)
-        # cat_img.save(os.path.join(file_name, f"test{i}.jpg"))
         i += 1
-    # create gif
-    #concat_list = []
-    # for im in os.listdir(file_name):
-    #     if im.startswith("test") and im.endswith(".jpg"):
-    #         concat_list.append(im)
-    # concat_list.sort(key=lambda x: int(x.split('_')[1].split('.')[0]))
-    # for im in concat_list:
-    #     im = os.path.join(file_name, im)
-    #     frames.append(imageio.imread(im))
-    # duration, set image changing time (sec)
-    # imageio.mimsave(gif_name,frames,'GIF',duration=0.3)
 
 
 def plot_KL(kld, beta, dir):
@@ -260,7 +247,7 @@ def plot_KL(kld, beta, dir):
     curve2, = ax2.plot(range(epoch), beta, color='darkorange', label='KL beta')
     curves = [curve1, curve2]
     ax1.legend(curves, [curve.get_label() for curve in curves], loc='upper right')
-    plt.savefig(os.path.join(dir, f'kl_1.jpg'))
+    plt.savefig(os.path.join(dir, f'kl.jpg'))
 
 
 def plot_PSNR(psnr, dir):
@@ -270,7 +257,7 @@ def plot_PSNR(psnr, dir):
     plt.xlabel(f"Epochs (every 5 epochs)")
     plt.ylabel(f"PSNR")
     plt.plot(range(len(psnr)), psnr)
-    plt.savefig(os.path.join(dir, f'psnr_1.jpg'))
+    plt.savefig(os.path.join(dir, f'psnr.jpg'))
 
 
 def plot_figure(KLD, KLB, TFR, MSE, LOSS, args):
@@ -291,4 +278,4 @@ def plot_figure(KLD, KLB, TFR, MSE, LOSS, args):
 
     curves = [curve1, curve2, curve3, curve4, curve5]
     ratio.legend(curves, [curve.get_label() for curve in curves], loc='upper right')
-    plt.savefig(os.path.join(args.log_dir, f'figure_1.jpg'))
+    plt.savefig(os.path.join(args.log_dir, f'figure.jpg'))

@@ -102,9 +102,6 @@ def train(x, cond, modules, optimizer, kl_anneal, args, epoch):
 
         # reparameter
         z_t, mu, logvar = modules['posterior'](h_t)
-        # print("z size: ", z_t.size())
-        # print("c size: ", c_t.size())
-        # print("h_past size: ", h_past.size())
         # predict frame, time t-1 for encoder
         # concatenate the condition part with the latent vector (CVAE), cond + Ht-1 + Zt
         z_cond_cat = torch.cat((h_past, z_t, c_t), axis=1)
@@ -149,7 +146,7 @@ class kl_annealing():
             # half cycle to keep 1
             cycEpoch = epoch % (self.cycTime)
             beta = (1. / self.cycTime) * cycEpoch * 2
-            return beta if epoch < (self.cycTime/2) else 1.
+            return beta if cycEpoch < (self.cycTime/2) else 1.
         else:
             # one cycle time to reach 1, later keep 1 to the end
             beta = (1. / self.cycTime) * epoch
@@ -183,7 +180,7 @@ def main():
         args.log_dir = '%s/continued' % args.log_dir
         start_epoch = saved_model['last_epoch']
     else:
-        name = 'rnn_size=%d-predictor-posterior-rnn_layers=%d-%d-n_past=%d-n_future=%d-lr=%.4f-g_dim=%d-z_dim=%d-last_frame_skip=%s-beta=%.7f-kl-mode=%s'\
+        name = 'rnn_size=%d-predictor-posterior-rnn_layers=%d-%d-n_past=%d-n_future=%d-lr=%.4f-g_dim=%d-z_dim=%d-last_frame_skip=%s-beta=%.7f-kl-mode=%s-2'\
             % (args.rnn_size, args.predictor_rnn_layers, args.posterior_rnn_layers, args.n_past, args.n_future, args.lr, args.g_dim, args.z_dim, args.last_frame_skip, args.beta, args.kl_anneal_cyclical)
 
         args.log_dir = '%s/%s' % (args.log_dir, name)

@@ -1,0 +1,361 @@
+args: Namespace(lr=0.002, beta1=0.9, batch_size=12, log_dir='./logs/fp/rnn_size=256-predictor-posterior-rnn_layers=2-1-n_past=2-n_future=10-lr=0.0020-g_dim=128-z_dim=64-last_frame_skip=False-beta=0.0001000-kl-mode=False-2', model_dir='', data_root='.', optimizer='adam', niter=300, epoch_size=600, tfr=1.0, tfr_start_decay_epoch=100, tfr_decay_step=0.005, tfr_lower_bound=0.1, kl_anneal_cyclical=False, kl_anneal_ratio=0.1, kl_anneal_cycle=5, seed=1, n_past=2, n_future=10, n_eval=12, rnn_size=256, posterior_rnn_layers=1, predictor_rnn_layers=2, z_dim=64, g_dim=128, cond_dim=7, beta=0.0001, num_workers=4, last_frame_skip=False, cuda=True)
+[epoch: 00] loss: 0.00855 | mse loss: 0.00855 | kld loss: 71.26507
+====================== validate psnr = 18.68638 ========================
+[epoch: 01] loss: 0.01765 | mse loss: 0.00950 | kld loss: 0.48919
+[epoch: 02] loss: 0.00766 | mse loss: 0.00761 | kld loss: 0.00156
+[epoch: 03] loss: 0.00737 | mse loss: 0.00730 | kld loss: 0.00127
+[epoch: 04] loss: 0.00711 | mse loss: 0.00694 | kld loss: 0.00257
+[epoch: 05] loss: 0.00918 | mse loss: 0.00826 | kld loss: 0.01101
+====================== validate psnr = 18.71124 ========================
+[epoch: 06] loss: 0.00693 | mse loss: 0.00686 | kld loss: 0.00070
+[epoch: 07] loss: 0.00666 | mse loss: 0.00653 | kld loss: 0.00108
+[epoch: 08] loss: 0.00630 | mse loss: 0.00617 | kld loss: 0.00093
+[epoch: 09] loss: 0.00596 | mse loss: 0.00585 | kld loss: 0.00073
+[epoch: 10] loss: 0.00573 | mse loss: 0.00554 | kld loss: 0.00115
+====================== validate psnr = 19.50885 ========================
+[epoch: 11] loss: 0.00574 | mse loss: 0.00538 | kld loss: 0.00199
+[epoch: 12] loss: 0.00518 | mse loss: 0.00516 | kld loss: 0.00013
+[epoch: 13] loss: 0.00492 | mse loss: 0.00485 | kld loss: 0.00034
+[epoch: 14] loss: 0.00481 | mse loss: 0.00480 | kld loss: 0.00004
+[epoch: 15] loss: 0.00462 | mse loss: 0.00461 | kld loss: 0.00005
+====================== validate psnr = 19.59180 ========================
+[epoch: 16] loss: 0.00444 | mse loss: 0.00443 | kld loss: 0.00005
+[epoch: 17] loss: 0.00440 | mse loss: 0.00438 | kld loss: 0.00005
+[epoch: 18] loss: 0.00425 | mse loss: 0.00423 | kld loss: 0.00004
+[epoch: 19] loss: 0.00413 | mse loss: 0.00411 | kld loss: 0.00004
+[epoch: 20] loss: 0.00409 | mse loss: 0.00407 | kld loss: 0.00004
+====================== validate psnr = 20.39148 ========================
+[epoch: 21] loss: 0.00398 | mse loss: 0.00397 | kld loss: 0.00004
+[epoch: 22] loss: 0.00396 | mse loss: 0.00392 | kld loss: 0.00012
+[epoch: 23] loss: 0.00378 | mse loss: 0.00378 | kld loss: 0.00002
+[epoch: 24] loss: 0.00368 | mse loss: 0.00366 | kld loss: 0.00003
+[epoch: 25] loss: 0.00359 | mse loss: 0.00357 | kld loss: 0.00004
+====================== validate psnr = 21.65650 ========================
+[epoch: 26] loss: 0.00351 | mse loss: 0.00349 | kld loss: 0.00004
+[epoch: 27] loss: 0.00342 | mse loss: 0.00340 | kld loss: 0.00004
+[epoch: 28] loss: 0.00342 | mse loss: 0.00341 | kld loss: 0.00004
+[epoch: 29] loss: 0.00329 | mse loss: 0.00327 | kld loss: 0.00004
+[epoch: 30] loss: 0.00325 | mse loss: 0.00324 | kld loss: 0.00004
+====================== validate psnr = 22.24379 ========================
+[epoch: 31] loss: 0.00322 | mse loss: 0.00320 | kld loss: 0.00004
+[epoch: 32] loss: 0.00319 | mse loss: 0.00317 | kld loss: 0.00004
+[epoch: 33] loss: 0.00310 | mse loss: 0.00308 | kld loss: 0.00004
+[epoch: 34] loss: 0.00310 | mse loss: 0.00308 | kld loss: 0.00004
+[epoch: 35] loss: 0.00305 | mse loss: 0.00303 | kld loss: 0.00004
+====================== validate psnr = 23.48220 ========================
+[epoch: 36] loss: 0.00297 | mse loss: 0.00295 | kld loss: 0.00004
+[epoch: 37] loss: 0.00301 | mse loss: 0.00299 | kld loss: 0.00004
+[epoch: 38] loss: 0.00294 | mse loss: 0.00292 | kld loss: 0.00004
+[epoch: 39] loss: 0.00296 | mse loss: 0.00293 | kld loss: 0.00004
+[epoch: 40] loss: 0.00291 | mse loss: 0.00288 | kld loss: 0.00004
+====================== validate psnr = 24.06211 ========================
+[epoch: 41] loss: 0.00292 | mse loss: 0.00290 | kld loss: 0.00004
+[epoch: 42] loss: 0.00286 | mse loss: 0.00283 | kld loss: 0.00004
+[epoch: 43] loss: 0.00283 | mse loss: 0.00280 | kld loss: 0.00004
+[epoch: 44] loss: 0.00283 | mse loss: 0.00281 | kld loss: 0.00004
+[epoch: 45] loss: 0.00281 | mse loss: 0.00278 | kld loss: 0.00004
+====================== validate psnr = 24.57953 ========================
+[epoch: 46] loss: 0.00277 | mse loss: 0.00274 | kld loss: 0.00004
+[epoch: 47] loss: 0.00275 | mse loss: 0.00272 | kld loss: 0.00004
+[epoch: 48] loss: 0.00272 | mse loss: 0.00269 | kld loss: 0.00004
+[epoch: 49] loss: 0.00270 | mse loss: 0.00267 | kld loss: 0.00004
+[epoch: 50] loss: 0.00270 | mse loss: 0.00267 | kld loss: 0.00004
+====================== validate psnr = 24.78869 ========================
+[epoch: 51] loss: 0.00265 | mse loss: 0.00262 | kld loss: 0.00004
+[epoch: 52] loss: 0.00269 | mse loss: 0.00266 | kld loss: 0.00004
+[epoch: 53] loss: 0.00263 | mse loss: 0.00259 | kld loss: 0.00004
+[epoch: 54] loss: 0.00266 | mse loss: 0.00263 | kld loss: 0.00004
+[epoch: 55] loss: 0.00261 | mse loss: 0.00258 | kld loss: 0.00004
+====================== validate psnr = 24.91142 ========================
+[epoch: 56] loss: 0.00266 | mse loss: 0.00262 | kld loss: 0.00004
+[epoch: 57] loss: 0.00262 | mse loss: 0.00259 | kld loss: 0.00004
+[epoch: 58] loss: 0.00260 | mse loss: 0.00256 | kld loss: 0.00004
+[epoch: 59] loss: 0.00260 | mse loss: 0.00256 | kld loss: 0.00004
+[epoch: 60] loss: 0.00261 | mse loss: 0.00257 | kld loss: 0.00004
+====================== validate psnr = 25.23306 ========================
+[epoch: 61] loss: 0.00256 | mse loss: 0.00253 | kld loss: 0.00003
+[epoch: 62] loss: 0.00253 | mse loss: 0.00249 | kld loss: 0.00003
+[epoch: 63] loss: 0.00250 | mse loss: 0.00247 | kld loss: 0.00003
+[epoch: 64] loss: 0.00254 | mse loss: 0.00251 | kld loss: 0.00003
+[epoch: 65] loss: 0.00254 | mse loss: 0.00250 | kld loss: 0.00004
+====================== validate psnr = 25.11182 ========================
+[epoch: 66] loss: 0.00249 | mse loss: 0.00246 | kld loss: 0.00003
+[epoch: 67] loss: 0.00252 | mse loss: 0.00249 | kld loss: 0.00003
+[epoch: 68] loss: 0.00253 | mse loss: 0.00249 | kld loss: 0.00003
+[epoch: 69] loss: 0.00249 | mse loss: 0.00246 | kld loss: 0.00003
+[epoch: 70] loss: 0.00245 | mse loss: 0.00241 | kld loss: 0.00003
+====================== validate psnr = 25.45818 ========================
+[epoch: 71] loss: 0.00251 | mse loss: 0.00247 | kld loss: 0.00003
+[epoch: 72] loss: 0.00250 | mse loss: 0.00247 | kld loss: 0.00003
+[epoch: 73] loss: 0.00246 | mse loss: 0.00243 | kld loss: 0.00003
+[epoch: 74] loss: 0.00247 | mse loss: 0.00243 | kld loss: 0.00003
+[epoch: 75] loss: 0.00245 | mse loss: 0.00242 | kld loss: 0.00003
+====================== validate psnr = 25.49112 ========================
+[epoch: 76] loss: 0.00244 | mse loss: 0.00240 | kld loss: 0.00003
+[epoch: 77] loss: 0.00243 | mse loss: 0.00240 | kld loss: 0.00003
+[epoch: 78] loss: 0.00244 | mse loss: 0.00240 | kld loss: 0.00003
+[epoch: 79] loss: 0.00242 | mse loss: 0.00239 | kld loss: 0.00003
+[epoch: 80] loss: 0.00243 | mse loss: 0.00239 | kld loss: 0.00003
+====================== validate psnr = 25.72579 ========================
+[epoch: 81] loss: 0.00239 | mse loss: 0.00236 | kld loss: 0.00003
+[epoch: 82] loss: 0.00241 | mse loss: 0.00237 | kld loss: 0.00003
+[epoch: 83] loss: 0.00240 | mse loss: 0.00236 | kld loss: 0.00003
+[epoch: 84] loss: 0.00239 | mse loss: 0.00236 | kld loss: 0.00003
+[epoch: 85] loss: 0.00242 | mse loss: 0.00239 | kld loss: 0.00003
+====================== validate psnr = 25.47750 ========================
+[epoch: 86] loss: 0.00236 | mse loss: 0.00233 | kld loss: 0.00003
+[epoch: 87] loss: 0.00238 | mse loss: 0.00235 | kld loss: 0.00003
+[epoch: 88] loss: 0.00234 | mse loss: 0.00231 | kld loss: 0.00003
+[epoch: 89] loss: 0.00238 | mse loss: 0.00234 | kld loss: 0.00003
+[epoch: 90] loss: 0.00239 | mse loss: 0.00236 | kld loss: 0.00003
+====================== validate psnr = 25.74246 ========================
+[epoch: 91] loss: 0.00233 | mse loss: 0.00229 | kld loss: 0.00003
+[epoch: 92] loss: 0.00239 | mse loss: 0.00235 | kld loss: 0.00003
+[epoch: 93] loss: 0.00237 | mse loss: 0.00233 | kld loss: 0.00003
+[epoch: 94] loss: 0.00231 | mse loss: 0.00227 | kld loss: 0.00003
+[epoch: 95] loss: 0.00230 | mse loss: 0.00227 | kld loss: 0.00003
+====================== validate psnr = 25.75042 ========================
+[epoch: 96] loss: 0.00234 | mse loss: 0.00230 | kld loss: 0.00003
+[epoch: 97] loss: 0.00230 | mse loss: 0.00227 | kld loss: 0.00003
+[epoch: 98] loss: 0.00228 | mse loss: 0.00225 | kld loss: 0.00003
+[epoch: 99] loss: 0.00233 | mse loss: 0.00230 | kld loss: 0.00003
+[epoch: 100] loss: 0.00229 | mse loss: 0.00225 | kld loss: 0.00003
+====================== validate psnr = 25.82006 ========================
+[epoch: 101] loss: 0.00229 | mse loss: 0.00226 | kld loss: 0.00003
+[epoch: 102] loss: 0.00226 | mse loss: 0.00223 | kld loss: 0.00003
+[epoch: 103] loss: 0.00224 | mse loss: 0.00221 | kld loss: 0.00003
+[epoch: 104] loss: 0.00230 | mse loss: 0.00226 | kld loss: 0.00003
+[epoch: 105] loss: 0.00223 | mse loss: 0.00220 | kld loss: 0.00003
+====================== validate psnr = 25.67317 ========================
+[epoch: 106] loss: 0.00228 | mse loss: 0.00224 | kld loss: 0.00003
+[epoch: 107] loss: 0.00228 | mse loss: 0.00224 | kld loss: 0.00003
+[epoch: 108] loss: 0.00224 | mse loss: 0.00221 | kld loss: 0.00003
+[epoch: 109] loss: 0.00225 | mse loss: 0.00222 | kld loss: 0.00003
+[epoch: 110] loss: 0.00221 | mse loss: 0.00218 | kld loss: 0.00003
+====================== validate psnr = 25.89292 ========================
+[epoch: 111] loss: 0.00223 | mse loss: 0.00220 | kld loss: 0.00003
+[epoch: 112] loss: 0.00221 | mse loss: 0.00218 | kld loss: 0.00003
+[epoch: 113] loss: 0.00226 | mse loss: 0.00223 | kld loss: 0.00003
+[epoch: 114] loss: 0.00222 | mse loss: 0.00219 | kld loss: 0.00003
+[epoch: 115] loss: 0.00216 | mse loss: 0.00214 | kld loss: 0.00002
+====================== validate psnr = 25.91543 ========================
+[epoch: 116] loss: 0.00217 | mse loss: 0.00216 | kld loss: 0.00001
+[epoch: 117] loss: 0.00220 | mse loss: 0.00219 | kld loss: 0.00001
+[epoch: 118] loss: 0.00210 | mse loss: 0.00210 | kld loss: 0.00000
+[epoch: 119] loss: 0.00222 | mse loss: 0.00221 | kld loss: 0.00000
+[epoch: 120] loss: 0.00215 | mse loss: 0.00214 | kld loss: 0.00000
+====================== validate psnr = 26.27459 ========================
+[epoch: 121] loss: 0.00219 | mse loss: 0.00219 | kld loss: 0.00000
+[epoch: 122] loss: 0.00218 | mse loss: 0.00217 | kld loss: 0.00000
+[epoch: 123] loss: 0.00214 | mse loss: 0.00214 | kld loss: 0.00000
+[epoch: 124] loss: 0.00215 | mse loss: 0.00214 | kld loss: 0.00000
+[epoch: 125] loss: 0.00213 | mse loss: 0.00212 | kld loss: 0.00000
+====================== validate psnr = 25.84680 ========================
+[epoch: 126] loss: 0.00211 | mse loss: 0.00211 | kld loss: 0.00000
+[epoch: 127] loss: 0.00225 | mse loss: 0.00225 | kld loss: 0.00000
+[epoch: 128] loss: 0.00216 | mse loss: 0.00216 | kld loss: 0.00000
+[epoch: 129] loss: 0.00213 | mse loss: 0.00213 | kld loss: 0.00000
+[epoch: 130] loss: 0.00211 | mse loss: 0.00210 | kld loss: 0.00000
+====================== validate psnr = 25.79445 ========================
+[epoch: 131] loss: 0.00222 | mse loss: 0.00212 | kld loss: 0.00010
+[epoch: 132] loss: 0.00208 | mse loss: 0.00208 | kld loss: 0.00000
+[epoch: 133] loss: 0.00208 | mse loss: 0.00208 | kld loss: 0.00000
+[epoch: 134] loss: 0.00210 | mse loss: 0.00210 | kld loss: 0.00000
+[epoch: 135] loss: 0.00206 | mse loss: 0.00206 | kld loss: 0.00000
+====================== validate psnr = 26.05488 ========================
+[epoch: 136] loss: 0.00213 | mse loss: 0.00213 | kld loss: 0.00000
+[epoch: 137] loss: 0.00211 | mse loss: 0.00211 | kld loss: 0.00000
+[epoch: 138] loss: 0.00211 | mse loss: 0.00211 | kld loss: 0.00000
+[epoch: 139] loss: 0.00205 | mse loss: 0.00205 | kld loss: 0.00000
+[epoch: 140] loss: 0.00205 | mse loss: 0.00205 | kld loss: 0.00000
+====================== validate psnr = 26.25106 ========================
+[epoch: 141] loss: 0.00205 | mse loss: 0.00205 | kld loss: 0.00000
+[epoch: 142] loss: 0.00205 | mse loss: 0.00205 | kld loss: 0.00000
+[epoch: 143] loss: 0.00208 | mse loss: 0.00208 | kld loss: 0.00000
+[epoch: 144] loss: 0.00204 | mse loss: 0.00204 | kld loss: 0.00000
+[epoch: 145] loss: 0.00205 | mse loss: 0.00205 | kld loss: 0.00000
+====================== validate psnr = 26.27223 ========================
+[epoch: 146] loss: 0.00207 | mse loss: 0.00207 | kld loss: 0.00000
+[epoch: 147] loss: 0.00206 | mse loss: 0.00206 | kld loss: 0.00000
+[epoch: 148] loss: 0.00205 | mse loss: 0.00205 | kld loss: 0.00000
+[epoch: 149] loss: 0.00202 | mse loss: 0.00202 | kld loss: 0.00000
+[epoch: 150] loss: 0.00204 | mse loss: 0.00204 | kld loss: 0.00000
+====================== validate psnr = 26.33473 ========================
+[epoch: 151] loss: 0.00200 | mse loss: 0.00200 | kld loss: 0.00000
+[epoch: 152] loss: 0.00201 | mse loss: 0.00201 | kld loss: 0.00000
+[epoch: 153] loss: 0.00201 | mse loss: 0.00201 | kld loss: 0.00000
+[epoch: 154] loss: 0.00205 | mse loss: 0.00205 | kld loss: 0.00000
+[epoch: 155] loss: 0.00202 | mse loss: 0.00202 | kld loss: 0.00000
+====================== validate psnr = 26.34486 ========================
+[epoch: 156] loss: 0.00197 | mse loss: 0.00197 | kld loss: 0.00000
+[epoch: 157] loss: 0.00202 | mse loss: 0.00202 | kld loss: 0.00000
+[epoch: 158] loss: 0.00201 | mse loss: 0.00201 | kld loss: 0.00000
+[epoch: 159] loss: 0.00198 | mse loss: 0.00198 | kld loss: 0.00000
+[epoch: 160] loss: 0.00201 | mse loss: 0.00201 | kld loss: 0.00000
+====================== validate psnr = 26.40009 ========================
+[epoch: 161] loss: 0.00199 | mse loss: 0.00199 | kld loss: 0.00000
+[epoch: 162] loss: 0.00203 | mse loss: 0.00203 | kld loss: 0.00000
+[epoch: 163] loss: 0.00195 | mse loss: 0.00195 | kld loss: 0.00000
+[epoch: 164] loss: 0.00196 | mse loss: 0.00196 | kld loss: 0.00000
+[epoch: 165] loss: 0.00199 | mse loss: 0.00199 | kld loss: 0.00000
+====================== validate psnr = 26.31469 ========================
+[epoch: 166] loss: 0.00195 | mse loss: 0.00195 | kld loss: 0.00000
+[epoch: 167] loss: 0.00190 | mse loss: 0.00190 | kld loss: 0.00000
+[epoch: 168] loss: 0.00194 | mse loss: 0.00193 | kld loss: 0.00000
+[epoch: 169] loss: 0.00197 | mse loss: 0.00197 | kld loss: 0.00000
+[epoch: 170] loss: 0.00193 | mse loss: 0.00193 | kld loss: 0.00000
+====================== validate psnr = 26.49110 ========================
+[epoch: 171] loss: 0.00193 | mse loss: 0.00193 | kld loss: 0.00000
+[epoch: 172] loss: 0.00193 | mse loss: 0.00192 | kld loss: 0.00000
+[epoch: 173] loss: 0.00196 | mse loss: 0.00196 | kld loss: 0.00000
+[epoch: 174] loss: 0.00194 | mse loss: 0.00194 | kld loss: 0.00000
+[epoch: 175] loss: 0.00197 | mse loss: 0.00196 | kld loss: 0.00000
+====================== validate psnr = 26.05910 ========================
+[epoch: 176] loss: 0.00193 | mse loss: 0.00193 | kld loss: 0.00000
+[epoch: 177] loss: 0.00196 | mse loss: 0.00196 | kld loss: 0.00000
+[epoch: 178] loss: 0.00192 | mse loss: 0.00192 | kld loss: 0.00000
+[epoch: 179] loss: 0.00193 | mse loss: 0.00193 | kld loss: 0.00000
+[epoch: 180] loss: 0.00191 | mse loss: 0.00191 | kld loss: 0.00000
+====================== validate psnr = 26.60549 ========================
+[epoch: 181] loss: 0.00194 | mse loss: 0.00194 | kld loss: 0.00000
+[epoch: 182] loss: 0.00191 | mse loss: 0.00191 | kld loss: 0.00000
+[epoch: 183] loss: 0.00191 | mse loss: 0.00191 | kld loss: 0.00000
+[epoch: 184] loss: 0.00192 | mse loss: 0.00192 | kld loss: 0.00000
+[epoch: 185] loss: 0.00192 | mse loss: 0.00192 | kld loss: 0.00000
+====================== validate psnr = 26.55745 ========================
+[epoch: 186] loss: 0.00190 | mse loss: 0.00189 | kld loss: 0.00000
+[epoch: 187] loss: 0.00190 | mse loss: 0.00190 | kld loss: 0.00000
+[epoch: 188] loss: 0.00186 | mse loss: 0.00186 | kld loss: 0.00000
+[epoch: 189] loss: 0.00188 | mse loss: 0.00188 | kld loss: 0.00000
+[epoch: 190] loss: 0.00187 | mse loss: 0.00187 | kld loss: 0.00000
+====================== validate psnr = 26.53085 ========================
+[epoch: 191] loss: 0.00184 | mse loss: 0.00184 | kld loss: 0.00000
+[epoch: 192] loss: 0.00188 | mse loss: 0.00188 | kld loss: 0.00000
+[epoch: 193] loss: 0.00185 | mse loss: 0.00185 | kld loss: 0.00000
+[epoch: 194] loss: 0.00185 | mse loss: 0.00185 | kld loss: 0.00000
+[epoch: 195] loss: 0.00188 | mse loss: 0.00188 | kld loss: 0.00000
+====================== validate psnr = 26.68269 ========================
+[epoch: 196] loss: 0.00204 | mse loss: 0.00204 | kld loss: 0.00000
+[epoch: 197] loss: 0.00186 | mse loss: 0.00186 | kld loss: 0.00000
+[epoch: 198] loss: 0.00184 | mse loss: 0.00184 | kld loss: 0.00000
+[epoch: 199] loss: 0.00190 | mse loss: 0.00190 | kld loss: 0.00000
+[epoch: 200] loss: 0.00186 | mse loss: 0.00186 | kld loss: 0.00000
+====================== validate psnr = 26.51536 ========================
+[epoch: 201] loss: 0.00185 | mse loss: 0.00185 | kld loss: 0.00000
+[epoch: 202] loss: 0.00183 | mse loss: 0.00183 | kld loss: 0.00000
+[epoch: 203] loss: 0.00187 | mse loss: 0.00187 | kld loss: 0.00000
+[epoch: 204] loss: 0.00185 | mse loss: 0.00184 | kld loss: 0.00000
+[epoch: 205] loss: 0.00200 | mse loss: 0.00199 | kld loss: 0.00000
+====================== validate psnr = 26.08955 ========================
+[epoch: 206] loss: 0.00186 | mse loss: 0.00186 | kld loss: 0.00000
+[epoch: 207] loss: 0.00192 | mse loss: 0.00192 | kld loss: 0.00000
+[epoch: 208] loss: 0.00180 | mse loss: 0.00180 | kld loss: 0.00000
+[epoch: 209] loss: 0.00178 | mse loss: 0.00178 | kld loss: 0.00000
+[epoch: 210] loss: 0.00183 | mse loss: 0.00183 | kld loss: 0.00000
+====================== validate psnr = 26.61740 ========================
+[epoch: 211] loss: 0.00183 | mse loss: 0.00183 | kld loss: 0.00000
+[epoch: 212] loss: 0.00184 | mse loss: 0.00184 | kld loss: 0.00000
+[epoch: 213] loss: 0.00182 | mse loss: 0.00182 | kld loss: 0.00000
+[epoch: 214] loss: 0.00178 | mse loss: 0.00178 | kld loss: 0.00000
+[epoch: 215] loss: 0.00184 | mse loss: 0.00184 | kld loss: 0.00000
+====================== validate psnr = 26.65249 ========================
+[epoch: 216] loss: 0.00179 | mse loss: 0.00179 | kld loss: 0.00000
+[epoch: 217] loss: 0.00179 | mse loss: 0.00179 | kld loss: 0.00000
+[epoch: 218] loss: 0.00187 | mse loss: 0.00187 | kld loss: 0.00000
+[epoch: 219] loss: 0.00182 | mse loss: 0.00182 | kld loss: 0.00000
+[epoch: 220] loss: 0.00173 | mse loss: 0.00173 | kld loss: 0.00000
+====================== validate psnr = 26.87807 ========================
+[epoch: 221] loss: 0.00179 | mse loss: 0.00179 | kld loss: 0.00000
+[epoch: 222] loss: 0.00178 | mse loss: 0.00178 | kld loss: 0.00000
+[epoch: 223] loss: 0.00179 | mse loss: 0.00179 | kld loss: 0.00000
+[epoch: 224] loss: 0.00178 | mse loss: 0.00178 | kld loss: 0.00000
+[epoch: 225] loss: 0.00175 | mse loss: 0.00175 | kld loss: 0.00000
+====================== validate psnr = 26.65549 ========================
+[epoch: 226] loss: 0.00196 | mse loss: 0.00195 | kld loss: 0.00000
+[epoch: 227] loss: 0.00180 | mse loss: 0.00180 | kld loss: 0.00000
+[epoch: 228] loss: 0.00178 | mse loss: 0.00178 | kld loss: 0.00000
+[epoch: 229] loss: 0.00175 | mse loss: 0.00175 | kld loss: 0.00000
+[epoch: 230] loss: 0.00194 | mse loss: 0.00194 | kld loss: 0.00000
+====================== validate psnr = 26.64730 ========================
+[epoch: 231] loss: 0.00178 | mse loss: 0.00178 | kld loss: 0.00000
+[epoch: 232] loss: 0.00177 | mse loss: 0.00177 | kld loss: 0.00000
+[epoch: 233] loss: 0.00175 | mse loss: 0.00175 | kld loss: 0.00000
+[epoch: 234] loss: 0.00177 | mse loss: 0.00177 | kld loss: 0.00000
+[epoch: 235] loss: 0.00174 | mse loss: 0.00174 | kld loss: 0.00000
+====================== validate psnr = 26.62873 ========================
+[epoch: 236] loss: 0.00173 | mse loss: 0.00172 | kld loss: 0.00000
+[epoch: 237] loss: 0.00176 | mse loss: 0.00176 | kld loss: 0.00000
+[epoch: 238] loss: 0.00175 | mse loss: 0.00174 | kld loss: 0.00000
+[epoch: 239] loss: 0.00176 | mse loss: 0.00176 | kld loss: 0.00000
+[epoch: 240] loss: 0.00175 | mse loss: 0.00175 | kld loss: 0.00000
+====================== validate psnr = 26.56327 ========================
+[epoch: 241] loss: 0.00174 | mse loss: 0.00174 | kld loss: 0.00000
+[epoch: 242] loss: 0.00194 | mse loss: 0.00194 | kld loss: 0.00000
+[epoch: 243] loss: 0.00180 | mse loss: 0.00180 | kld loss: 0.00000
+[epoch: 244] loss: 0.00176 | mse loss: 0.00176 | kld loss: 0.00000
+[epoch: 245] loss: 0.00172 | mse loss: 0.00172 | kld loss: 0.00000
+====================== validate psnr = 26.75587 ========================
+[epoch: 246] loss: 0.00174 | mse loss: 0.00174 | kld loss: 0.00000
+[epoch: 247] loss: 0.00174 | mse loss: 0.00174 | kld loss: 0.00000
+[epoch: 248] loss: 0.00170 | mse loss: 0.00170 | kld loss: 0.00000
+[epoch: 249] loss: 0.00175 | mse loss: 0.00175 | kld loss: 0.00000
+[epoch: 250] loss: 0.00175 | mse loss: 0.00175 | kld loss: 0.00000
+====================== validate psnr = 26.76122 ========================
+[epoch: 251] loss: 0.00169 | mse loss: 0.00169 | kld loss: 0.00000
+[epoch: 252] loss: 0.00173 | mse loss: 0.00172 | kld loss: 0.00000
+[epoch: 253] loss: 0.00177 | mse loss: 0.00177 | kld loss: 0.00000
+[epoch: 254] loss: 0.00174 | mse loss: 0.00173 | kld loss: 0.00000
+[epoch: 255] loss: 0.00171 | mse loss: 0.00171 | kld loss: 0.00000
+====================== validate psnr = 26.76778 ========================
+[epoch: 256] loss: 0.00168 | mse loss: 0.00168 | kld loss: 0.00000
+[epoch: 257] loss: 0.00174 | mse loss: 0.00174 | kld loss: 0.00000
+[epoch: 258] loss: 0.00169 | mse loss: 0.00169 | kld loss: 0.00000
+[epoch: 259] loss: 0.00170 | mse loss: 0.00170 | kld loss: 0.00000
+[epoch: 260] loss: 0.00170 | mse loss: 0.00170 | kld loss: 0.00000
+====================== validate psnr = 26.76813 ========================
+[epoch: 261] loss: 0.00169 | mse loss: 0.00169 | kld loss: 0.00000
+[epoch: 262] loss: 0.00172 | mse loss: 0.00172 | kld loss: 0.00000
+[epoch: 263] loss: 0.00171 | mse loss: 0.00171 | kld loss: 0.00000
+[epoch: 264] loss: 0.00168 | mse loss: 0.00168 | kld loss: 0.00000
+[epoch: 265] loss: 0.00171 | mse loss: 0.00171 | kld loss: 0.00000
+====================== validate psnr = 26.59547 ========================
+[epoch: 266] loss: 0.00170 | mse loss: 0.00170 | kld loss: 0.00000
+[epoch: 267] loss: 0.00168 | mse loss: 0.00168 | kld loss: 0.00000
+[epoch: 268] loss: 0.00179 | mse loss: 0.00179 | kld loss: 0.00000
+[epoch: 269] loss: 0.00168 | mse loss: 0.00168 | kld loss: 0.00000
+[epoch: 270] loss: 0.00166 | mse loss: 0.00166 | kld loss: 0.00000
+====================== validate psnr = 26.56154 ========================
+[epoch: 271] loss: 0.00167 | mse loss: 0.00167 | kld loss: 0.00000
+[epoch: 272] loss: 0.00165 | mse loss: 0.00165 | kld loss: 0.00000
+[epoch: 273] loss: 0.00169 | mse loss: 0.00169 | kld loss: 0.00000
+[epoch: 274] loss: 0.00167 | mse loss: 0.00167 | kld loss: 0.00000
+[epoch: 275] loss: 0.00166 | mse loss: 0.00166 | kld loss: 0.00000
+====================== validate psnr = 26.58141 ========================
+[epoch: 276] loss: 0.00164 | mse loss: 0.00164 | kld loss: 0.00000
+[epoch: 277] loss: 0.00165 | mse loss: 0.00165 | kld loss: 0.00000
+[epoch: 278] loss: 0.00168 | mse loss: 0.00168 | kld loss: 0.00000
+[epoch: 279] loss: 0.00167 | mse loss: 0.00167 | kld loss: 0.00000
+[epoch: 280] loss: 0.00167 | mse loss: 0.00167 | kld loss: 0.00000
+====================== validate psnr = 26.53463 ========================
+[epoch: 281] loss: 0.00166 | mse loss: 0.00166 | kld loss: 0.00000
+[epoch: 282] loss: 0.00163 | mse loss: 0.00163 | kld loss: 0.00000
+[epoch: 283] loss: 0.00163 | mse loss: 0.00163 | kld loss: 0.00000
+[epoch: 284] loss: 0.00163 | mse loss: 0.00163 | kld loss: 0.00000
+[epoch: 285] loss: 0.00171 | mse loss: 0.00171 | kld loss: 0.00000
+====================== validate psnr = 26.54157 ========================
+[epoch: 286] loss: 0.00178 | mse loss: 0.00178 | kld loss: 0.00000
+[epoch: 287] loss: 0.00166 | mse loss: 0.00166 | kld loss: 0.00000
+[epoch: 288] loss: 0.00162 | mse loss: 0.00162 | kld loss: 0.00000
+[epoch: 289] loss: 0.00162 | mse loss: 0.00162 | kld loss: 0.00000
+[epoch: 290] loss: 0.00162 | mse loss: 0.00162 | kld loss: 0.00000
+====================== validate psnr = 26.70565 ========================
+[epoch: 291] loss: 0.00202 | mse loss: 0.00201 | kld loss: 0.00000
+[epoch: 292] loss: 0.00165 | mse loss: 0.00165 | kld loss: 0.00000
+[epoch: 293] loss: 0.00162 | mse loss: 0.00162 | kld loss: 0.00000
+[epoch: 294] loss: 0.00164 | mse loss: 0.00164 | kld loss: 0.00000
+[epoch: 295] loss: 0.00163 | mse loss: 0.00163 | kld loss: 0.00000
+====================== validate psnr = 26.68677 ========================
+[epoch: 296] loss: 0.00159 | mse loss: 0.00159 | kld loss: 0.00000
+[epoch: 297] loss: 0.00166 | mse loss: 0.00166 | kld loss: 0.00000
+[epoch: 298] loss: 0.00161 | mse loss: 0.00161 | kld loss: 0.00000
+[epoch: 299] loss: 0.00164 | mse loss: 0.00164 | kld loss: 0.00000

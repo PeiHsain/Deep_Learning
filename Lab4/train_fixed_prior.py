@@ -472,7 +472,7 @@ def demo():
         _, _, psnr = finn_eval_seq(test_seq[:, args.n_past:], pred_seq[:, args.n_past:])
         psnr_list.append(psnr)
         progress.update(1)
-        
+    plot_pred(test_seq, test_cond, modules, 'Test', args)
     ave_psnr = np.mean(np.concatenate(psnr_list))
     print(f"Average score on testing dataset = {ave_psnr}")
 

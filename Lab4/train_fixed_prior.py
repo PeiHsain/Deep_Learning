@@ -31,8 +31,9 @@ def parse_args():
     parser.add_argument('--beta1', default=0.9, type=float, help='momentum term for adam')
     parser.add_argument('--batch_size', default=12, type=int, help='batch size')
     parser.add_argument('--log_dir', default='./logs/fp', help='base directory to save logs')
-    parser.add_argument('--model_dir', default='', help='base directory to save logs')
-    parser.add_argument('--data_root', default='../../processed_data', help='root directory for data')
+    # parser.add_argument('--model_dir', default='', help='base directory to save logs')
+    parser.add_argument('--model_dir', default='./logs/fp/rnn_size=256-predictor-posterior-rnn_layers=2-1-n_past=2-n_future=10-lr=0.0020-g_dim=128-z_dim=64-last_frame_skip=False-beta=0.0001000-kl-mode=True-4', help='base directory to save logs')
+    parser.add_argument('--data_root', default='.', help='root directory for data')
     parser.add_argument('--optimizer', default='adam', help='optimizer to train with')
     parser.add_argument('--niter', type=int, default=300, help='number of epochs to train for')
     parser.add_argument('--epoch_size', type=int, default=600, help='epoch size')
@@ -75,12 +76,6 @@ def train(x, cond, modules, optimizer, kl_anneal, args, epoch):
     mse = 0
     kld = 0
     use_teacher_forcing = True if random.random() < args.tfr else False
-    # print("Teacher force: ", use_teacher_forcing)
-
-    # x -> 30 frame(batch, frame, 3, 64x64)
-    # print("x size: ", x.size())
-    # cond -> 30 frame with 4 action and 3 position (batch, frame, 7)
-    # print("cond size: ", cond.size())
     # inference model
     h = [modules['encoder'](x[:, i]) for i in range(args.n_past + args.n_future)]
     
@@ -378,6 +373,105 @@ def main():
     plot_KL(KLD, KLBeta, args.log_dir)
 
 
-if __name__ == '__main__':
-    main()
+def demo():
+    args = parse_args()
+    if args.cuda:
+        assert torch.cuda.is_available(), 'CUDA is not available.'
+        device = 'cuda'
+    else:
+        device = 'cpu'
+    print("device: ", device)
+    
+    assert args.n_past + args.n_future <= 30 and args.n_eval <= 30
+    assert 0 <= args.tfr and args.tfr <= 1
+    assert 0 <= args.tfr_start_decay_epoch 
+    assert 0 <= args.tfr_decay_step and args.tfr_decay_step <= 1
+
+    # load model and continue training from checkpoint
+    saved_model = torch.load('%s/model.pth' % args.model_dir)
+    optimizer = args.optimizer
+    model_dir = args.model_dir
+    # niter = args.niter
+    args = saved_model['args']
+    args.optimizer = optimizer
+    args.model_dir = model_dir
+    args.log_dir = '%s/continued' % args.log_dir
+    # start_epoch = saved_model['last_epoch']
+
+    print("Random Seed: ", args.seed)
+    random.seed(args.seed)
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed_all(args.seed)
+
+    print(args)
+
+    # ------------ build the models  --------------
+    frame_predictor = saved_model['frame_predictor']
+    posterior = saved_model['posterior']
+
+    decoder = saved_model['decoder']
+    encoder = saved_model['encoder']
+    
+    # --------- transfer to device ------------------------------------
+    frame_predictor.to(device)
+    posterior.to(device)
+    encoder.to(device)
+    decoder.to(device)
+
+    # --------- load a dataset ------------------------------------
+    test_data = bair_robot_pushing_dataset(args, 'test')
+    test_loader = DataLoader(test_data,
+                            num_workers=args.num_workers,
+                            batch_size=args.batch_size,
+                            shuffle=False,
+                            drop_last=True,
+                            pin_memory=True)
+    test_iterator = iter(test_loader)
+
+    # ---------------- optimizers ----------------
+    if args.optimizer == 'adam':
+        args.optimizer = optim.Adam
+    elif args.optimizer == 'rmsprop':
+        args.optimizer = optim.RMSprop
+    elif args.optimizer == 'sgd':
+        args.optimizer = optim.SGD
+    else:
+        raise ValueError('Unknown optimizer: %s' % args.optimizer)
+
+    params = list(frame_predictor.parameters()) + list(posterior.parameters()) + list(encoder.parameters()) + list(decoder.parameters())
+    optimizer = args.optimizer(params, lr=args.lr, betas=(args.beta1, 0.999))
+    kl_anneal = kl_annealing(args)
+
+    modules = {
+        'frame_predictor': frame_predictor,
+        'posterior': posterior,
+        'encoder': encoder,
+        'decoder': decoder,
+    }
+    # --------- testing loop ------------------------------------
+    # evaluate mode
+    frame_predictor.eval()
+    encoder.eval()
+    decoder.eval()
+    posterior.eval()
+
+    psnr_list = []
+    for _ in tqdm(len(test_data) // args.batch_size):
+        try:
+            test_seq, test_cond = next(test_iterator)
+        except StopIteration:
+            test_iterator = iter(test_loader)
+            test_seq, test_cond = next(test_iterator)
+
+        test_seq, test_cond = test_seq.to(device, dtype=torch.float32), test_cond.to(device, dtype=torch.float32)
+        pred_seq = pred(test_seq, test_cond, modules, args)
+        _, _, psnr = finn_eval_seq(test_seq[:, args.n_past:], pred_seq[:, args.n_past:])
+        psnr_list.append(psnr)
         
+    ave_psnr = np.mean(np.concatenate(psnr_list))
+    print(f"Average score on testing dataset = {ave_psnr}")
+
+
+if __name__ == '__main__':
+    # main()
+    demo()

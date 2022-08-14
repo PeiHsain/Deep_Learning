@@ -391,11 +391,13 @@ def demo():
     saved_model = torch.load('%s/model.pth' % args.model_dir)
     optimizer = args.optimizer
     model_dir = args.model_dir
+    data_root = args.data_root
     # niter = args.niter
     args = saved_model['args']
     args.optimizer = optimizer
     args.model_dir = model_dir
-    args.log_dir = '%s/continued' % args.log_dir
+    # args.log_dir = '%s/continued' % args.log_dir
+    args.data_root = data_root
     # start_epoch = saved_model['last_epoch']
 
     print("Random Seed: ", args.seed)

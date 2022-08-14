@@ -457,8 +457,10 @@ def demo():
     decoder.eval()
     posterior.eval()
 
+    loop_size = len(test_data) // args.batch_size
     psnr_list = []
-    for _ in tqdm(len(test_data) // args.batch_size):
+    progress = tqdm(total=loop_size)
+    for _ in range(loop_size):
         try:
             test_seq, test_cond = next(test_iterator)
         except StopIteration:
@@ -469,6 +471,7 @@ def demo():
         pred_seq = pred(test_seq, test_cond, modules, args)
         _, _, psnr = finn_eval_seq(test_seq[:, args.n_past:], pred_seq[:, args.n_past:])
         psnr_list.append(psnr)
+        progress.update(1)
         
     ave_psnr = np.mean(np.concatenate(psnr_list))
     print(f"Average score on testing dataset = {ave_psnr}")

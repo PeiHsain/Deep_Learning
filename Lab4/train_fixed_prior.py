@@ -32,7 +32,7 @@ def parse_args():
     parser.add_argument('--batch_size', default=12, type=int, help='batch size')
     parser.add_argument('--log_dir', default='./logs/fp', help='base directory to save logs')
     # parser.add_argument('--model_dir', default='', help='base directory to save logs')
-    parser.add_argument('--model_dir', default='./logs/fp/rnn_size=256-predictor-posterior-rnn_layers=2-1-n_past=2-n_future=10-lr=0.0020-g_dim=128-z_dim=64-last_frame_skip=False-beta=0.0001000-kl-mode=True-4', help='base directory to save logs')
+    parser.add_argument('--model_dir', default='./logs/fp/rnn_size=256-predictor-posterior-rnn_layers=2-1-n_past=2-n_future=10-lr=0.0020-g_dim=128-z_dim=64-last_frame_skip=False-beta=0.0001000-kl-mode=True-2', help='base directory to save logs')
     parser.add_argument('--data_root', default='.', help='root directory for data')
     parser.add_argument('--optimizer', default='adam', help='optimizer to train with')
     parser.add_argument('--niter', type=int, default=300, help='number of epochs to train for')
@@ -132,9 +132,6 @@ class kl_annealing():
         else:
             self.mode = 'monotonic'
         # raise NotImplementedError
-    
-    def update(self):
-        raise NotImplementedError
     
     def get_beta(self, epoch):
         if self.mode == 'cyclical':
@@ -472,7 +469,7 @@ def demo():
         _, _, psnr = finn_eval_seq(test_seq[:, args.n_past:], pred_seq[:, args.n_past:])
         psnr_list.append(psnr)
         progress.update(1)
-    plot_pred(test_seq, test_cond, modules, 'Test', args)
+    # plot_pred(test_seq, test_cond, modules, 'Test', args)
     ave_psnr = np.mean(np.concatenate(psnr_list))
     print(f"Average score on testing dataset = {ave_psnr}")
 

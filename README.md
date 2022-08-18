@@ -8,3 +8,5 @@ Analysis diabetic retinopathy (糖尿病所引發視網膜病變) in the followi
 ResNet architecture. 3. calculate the confusion matrix to evaluate the performance.
 # Lab4
 Implement a conditional VAE for video prediction. The model should be able to do prediction based on past frames.
+# Lab5
+Implement a conditional GAN to generate synthetic images according to multi-label conditions.

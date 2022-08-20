@@ -5,7 +5,7 @@ import torchvision.models as models
 '''===============================================================
 1. Title:     
 
-DLP spring 2022 Lab7 classifier
+DLP summer 2022 Lab5 classifier
 
 2. Purpose:
 

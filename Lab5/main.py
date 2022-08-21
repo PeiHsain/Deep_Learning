@@ -34,7 +34,7 @@ def parse_args():
     # parser.add_argument('--log_dir', default='./logs/fp', help='base directory to save logs')
     # parser.add_argument('--model_dir', default='', help='base directory to save logs')
     parser.add_argument('--file_root', default='.', help='root directory for json file')
-    parser.add_argument('--img_root', default='.', help='root directory for png images')
+    parser.add_argument('--img_root', default='../../iclevr', help='root directory for png images')
     parser.add_argument('--optimizer', default='adam', help='optimizer to train with')
     # parser.add_argument('--niter', type=int, default=300, help='number of epochs to train for')
     parser.add_argument('--epoch_size', type=int, default=100, help='epoch size')

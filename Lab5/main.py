@@ -11,12 +11,6 @@ from dataset import ICLEVR_dataset
 from model import weights_init, Generator, Discriminator
 from evaluator import evaluation_model
 from utils import concat_test, concat_image, plot_train_curve
-# from prefetch_generator import BackgroundGenerator
-
-
-# class DataLoaderX(DataLoader):
-#     def __iter__(self):
-#         return BackgroundGenerator(super().__iter__())
 
 
 def parse_args():
@@ -36,7 +30,7 @@ def parse_args():
     parser.add_argument('--file_root', default='.', help='root directory for json file')
     parser.add_argument('--img_root', default='../../iclevr', help='root directory for png images')
     parser.add_argument('--optimizer', default='adam', help='optimizer to train with')
-    # parser.add_argument('--niter', type=int, default=300, help='number of epochs to train for')
+    parser.add_argument('--seed', type=int, default=1, help='manual seed')
     parser.add_argument('--epoch_size', type=int, default=100, help='epoch size')
     parser.add_argument('--num_workers', type=int, default=4, help='number of data loading threads')
     parser.add_argument('--cuda', default=True, action='store_true')  # use cuda
@@ -57,6 +51,7 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
     eval_cond = concat_test(test_loader)
     # Create batch of latent vectors that we will use to visualize the progression of the generator
     fixed_noise = torch.randn(len(eval_cond), args.n_z, 1, 1, device=device)
+    print(f"eval_len={len(eval_cond)}")
 
     G_loss = []
     D_loss = []
@@ -105,13 +100,15 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
             """
             2. Updata G -> maximize log(D(G(z))) = minimize log(1 - D(G(z)))
             """
-            # netG.zero_grad()
-            optimizerG.zero_grad()
-            D_output = netD(fake_img.detach(), condition) # perform another forward pass of fake image
-            errG = criterion(D_output, r_label) # calculate loss of G
-            errG.backward() # calculate gradients for G
-            # D_G_z2 = D_output.mean().item()
-            optimizerG.step() # Update G
+            for i in range(5):
+                optimizerG.zero_grad()
+                noise = torch.randn(b_size, args.n_z, 1, 1, device=device, dtype=torch.float32)
+                fake_img = netG(noise, condition) # generate fake image batch
+                D_output = netD(fake_img.detach(), condition) # perform another forward pass of fake image
+                errG = criterion(D_output, r_label) # calculate loss of G
+                errG.backward() # calculate gradients for G
+                # D_G_z2 = D_output.mean().item()
+                optimizerG.step() # Update G
 
             d_loss_total += errD.item()
             g_loss_total += errG.item()
@@ -155,6 +152,11 @@ def main():
 
     os.makedirs('%s/models' % args.file_root, exist_ok=True)
     os.makedirs('%s/results' % args.file_root, exist_ok=True)
+
+    # Fix random seed
+    print("Random Seed: ", args.seed)
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed_all(args.seed)
 
     # Load the training and testing dataset
     train_dataset = ICLEVR_dataset(file_path=args.file_root, img_path=args.img_root, mode="train")

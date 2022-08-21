@@ -25,8 +25,6 @@ def parse_args():
     parser.add_argument('--n_Df', default=64, type=int, help='size of feature maps in discriminator')
     parser.add_argument('--n_cond', default=24, type=int, help='dimension of the one-hot conditions')
     parser.add_argument('--out_cond', default=100, type=int, help='dimension of the conditions embedding')
-    # parser.add_argument('--log_dir', default='./logs/fp', help='base directory to save logs')
-    # parser.add_argument('--model_dir', default='', help='base directory to save logs')
     parser.add_argument('--file_root', default='.', help='root directory for json file')
     parser.add_argument('--img_root', default='../../iclevr', help='root directory for png images')
     parser.add_argument('--optimizer', default='adam', help='optimizer to train with')
@@ -51,7 +49,6 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
     eval_cond = concat_test(test_loader)
     # Create batch of latent vectors that we will use to visualize the progression of the generator
     fixed_noise = torch.randn(len(eval_cond), args.n_z, 1, 1, device=device)
-    print(f"eval_len={len(eval_cond)}")
 
     G_loss = []
     D_loss = []
@@ -78,12 +75,10 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
             1. Update D -> maximze log(D(x)) + log(1 - D(G(z)))
             """
             ## Train with real batch
-            # netD.zero_grad()
             optimizerD.zero_grad()
             D_output = netD(real_img, condition) # forward pass
             errD_real = criterion(D_output, r_label) # calculate loss of D on real batch
             errD_real.backward() # calculate gradient of D in backward pass
-            # D_x = D_output.mean().item()
 
             ## Train with fake batch
             noise = torch.randn(b_size, args.n_z, 1, 1, device=device, dtype=torch.float32)
@@ -91,7 +86,6 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
             D_output = netD(fake_img.detach(), condition) # classify fake batch
             errD_fake = criterion(D_output, f_label) # calculate loss of D on fake batch
             errD_fake.backward() # calculate the gradient for this batch, sum with pre-gradient
-            # D_G_z1 = D_output.mean().item()
             errD = errD_real + errD_fake # compute error of D as sum over the fake and real batches
             
             ## Update D
@@ -104,10 +98,9 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
                 optimizerG.zero_grad()
                 noise = torch.randn(b_size, args.n_z, 1, 1, device=device, dtype=torch.float32)
                 fake_img = netG(noise, condition) # generate fake image batch
-                D_output = netD(fake_img.detach(), condition) # perform another forward pass of fake image
+                D_output = netD(fake_img, condition) # perform another forward pass of fake image
                 errG = criterion(D_output, r_label) # calculate loss of G
                 errG.backward() # calculate gradients for G
-                # D_G_z2 = D_output.mean().item()
                 optimizerG.step() # Update G
 
             d_loss_total += errD.item()

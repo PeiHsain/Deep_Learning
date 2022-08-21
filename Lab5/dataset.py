@@ -38,7 +38,6 @@ class ICLEVR_dataset(Dataset):
             # for testing
             data = json.load(open(os.path.join(self.root, 'new_test.json')))
             self.obj = list(data)
-        print(self.obj[0])
         self.data_len = len(self.obj)
         self.data_label = self.one_hot() # one hot vector of label
 

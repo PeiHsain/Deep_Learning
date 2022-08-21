@@ -19,7 +19,7 @@ def concat_test(test_loader):
 
 def denormal_image(img):
     'Apply de-normalization while generating RGB images.'
-    image = img.mul(0.5).add_([0.5, 0.5, 0.5])
+    image = img.mul(0.5).add_(0.5)
     return image
 
 

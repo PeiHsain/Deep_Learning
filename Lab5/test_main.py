@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument('--n_Df', default=64, type=int, help='size of feature maps in discriminator')
     parser.add_argument('--n_cond', default=24, type=int, help='dimension of the one-hot conditions')
     parser.add_argument('--out_cond', default=200, type=int, help='dimension of the conditions embedding')
-    parser.add_argument('--model_dir', default='./models/epoch89_acc0.7083_2.pt', help='directory for the best model')
+    parser.add_argument('--model_dir', default='./models/WGAN_epoch74_acc0.5694_1.pt', help='directory for the best model')
     parser.add_argument('--file_root', default='.', help='root directory for json file')
     parser.add_argument('--img_root', default='../../iclevr', help='root directory for png images')
     parser.add_argument('--optimizer', default='adam', help='optimizer to train with')
@@ -97,9 +97,9 @@ def main():
 
     # Test the model
     print("test.json: ")
-    test(args.n_z, test_cond, netG, evaluator, device, "test_results_2")
+    test(args.n_z, test_cond, netG, evaluator, device, "WGAN_test_results_1")
     print("new_test.json: ")
-    test(args.n_z, new_test_cond, netG, evaluator, device, "new_test_results_2")
+    test(args.n_z, new_test_cond, netG, evaluator, device, "WGAN_new_test_results_1")
 
 
 if __name__ == "__main__":

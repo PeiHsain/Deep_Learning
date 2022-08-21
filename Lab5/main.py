@@ -125,8 +125,8 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
         if acc > best_acc:
             best_G = copy.deepcopy(netG.state_dict())
             best_acc = acc
-            torch.save(best_G, os.path.join('./models', f'epoch{epoch}_acc{best_acc}_2.pt'))
-            concat_image(gene_x, save_name=f"epoch{epoch}_acc{best_acc}_2")
+            torch.save(best_G, os.path.join('./models', f'epoch{epoch}_acc{best_acc:.4f}_2.pt'))
+            # concat_image(gene_x, save_name=f"epoch{epoch}_acc{best_acc}_2")
     plot_train_curve(G_loss, D_loss, eval_acc, save_name=f"train_process_2")
 
 

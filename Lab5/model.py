@@ -117,7 +117,7 @@ class Discriminator(nn.Module):
 class W_Discriminator(nn.Module):
     'Discriminator for WGAN. A binary classification network that takes an image as input and outputs a scalar probability that the input image is real (as opposed to fake).'
     def __init__(self, args):
-        super(Discriminator, self).__init__()
+        super(W_Discriminator, self).__init__()
         self.imag_size = args.image_size
         # self.c_dim = args.out_cond
         # condition embedding. 24 -> 64x64

@@ -69,7 +69,7 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
             condition = cond.to(device, dtype=torch.float32)
             b_size = len(img)
             # no log in loss
-            one = torch.cuda.FloatTensor([b_size])
+            one = torch.cuda.FloatTensor(np.ones(b_size))
             mone = -1 * one
 
             # make sure Lipschitz continuity

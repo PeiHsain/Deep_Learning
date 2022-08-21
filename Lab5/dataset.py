@@ -28,15 +28,17 @@ class ICLEVR_dataset(Dataset):
         if self.mode == 'train':
             # keys are filenames and values are objects, 18009 data
             data = json.load(open(os.path.join(self.root, 'train.json')))
-            self.img_name = data.keys() # image file name
-            self.obj = data.values() # objects
+            self.img_name = list(data.keys()) # image file name
+            self.obj = list(data.values()) # objects
         elif self.mode == 'eval':
             # each element includes multiple objects, 32 data
-            self.obj = json.load(open(os.path.join(self.root, 'test.json')))
+            data = json.load(open(os.path.join(self.root, 'test.json')))
+            self.obj = list(data)
         else:
             # for testing
-            self.obj = json.load(open(os.path.join(self.root, 'new_test.json')))
-        
+            data = json.load(open(os.path.join(self.root, 'new_test.json')))
+            self.obj = list(data)
+        print(self.obj[0])
         self.data_len = len(self.obj)
         self.data_label = self.one_hot() # one hot vector of label
 
@@ -52,7 +54,7 @@ class ICLEVR_dataset(Dataset):
     
     def __len__(self):
         # number of dataset
-        return len(self.data_len)
+        return self.data_len
 
     def __getitem__(self, index):
         label = self.data_label[index]

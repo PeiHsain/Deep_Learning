@@ -65,11 +65,11 @@ class Discriminator(nn.Module):
     'Discriminator. A binary classification network that takes an image as input and outputs a scalar probability that the input image is real (as opposed to fake).'
     def __init__(self, args):
         super(Discriminator, self).__init__()
-        self.imag_size = args.n_zimage_size
+        self.imag_size = args.image_size
         # self.c_dim = args.out_cond
         # condition embedding. 24 -> 64x64
         self.cond_embed = nn.Sequential(
-            nn.Linear(args.n_cond, (self.imag_size*self.imag_size))
+            nn.Linear(args.n_cond, self.imag_size*self.imag_size)
         )
         self.conv1 = nn.Sequential(
             # input is (nc+1) x 64 x 64
@@ -81,7 +81,7 @@ class Discriminator(nn.Module):
         # state size. (ndf*2) x 16 x 16
         self.conv3 = self.conv(args.n_Df * 2, args.n_Df * 4, 4, 2, 1, False, 0.2, True)
         # state size. (ndf*4) x 8 x 8
-        self.conv4 = self.conv(args.n_Df * 2, args.n_Df * 8, 4, 2, 1, False, 0.2, True)
+        self.conv4 = self.conv(args.n_Df * 4, args.n_Df * 8, 4, 2, 1, False, 0.2, True)
         self.output = nn.Sequential(
             # state size. (ndf*8) x 4 x 4
             nn.Conv2d(args.n_Df * 8, 1, 4, 1, 0, bias=False),

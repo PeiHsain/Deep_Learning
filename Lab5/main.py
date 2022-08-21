@@ -73,11 +73,11 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
         netG.train()
         # For each batch in the dataloader
         for img, cond in tqdm(train_loader):
-            real_img = img.to(device)
-            condition = cond.to(device)
+            real_img = img.to(device, dtype=torch.float32)
+            condition = cond.to(device, dtype=torch.float32)
             b_size = len(img)
-            r_label = torch.ones(b_size).to(device)
-            f_label = torch.zeros(b_size).to(device)
+            r_label = torch.ones(b_size).to(device, dtype=torch.float32)
+            f_label = torch.zeros(b_size).to(device, dtype=torch.float32)
 
             """
             1. Update D -> maximze log(D(x)) + log(1 - D(G(z)))
@@ -91,7 +91,7 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
             # D_x = D_output.mean().item()
 
             ## Train with fake batch
-            noise = torch.randn(b_size, args.n_z, 1, 1, device=device)
+            noise = torch.randn(b_size, args.n_z, 1, 1, device=device, dtype=torch.float32)
             fake_img = netG(noise, condition) # generate fake image batch
             D_output = netD(fake_img.detach(), condition) # classify fake batch
             errD_fake = criterion(D_output, f_label) # calculate loss of D on fake batch
@@ -108,7 +108,7 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
             # netG.zero_grad()
             optimizerG.zero_grad()
             D_output = netD(fake_img.detach(), condition) # perform another forward pass of fake image
-            errG = criterion(D_output, condition) # calculate loss of G
+            errG = criterion(D_output, r_label) # calculate loss of G
             errG.backward() # calculate gradients for G
             # D_G_z2 = D_output.mean().item()
             optimizerG.step() # Update G
@@ -123,7 +123,7 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
         netD.eval()
         netG.eval()
         acc = 0
-        condition = eval_cond.to(device)
+        condition = eval_cond.to(device, dtype=torch.float32)
         # saving G's output on fixed_noise, generate image
         with torch.no_grad():
             gene_x = netG(fixed_noise, condition).detach()

@@ -17,8 +17,15 @@ def concat_test(test_loader):
     return eval_cond
 
 
+def denormal_image(img):
+    'Apply de-normalization while generating RGB images.'
+    image = img.mul_([0.5, 0.5, 0.5]).add_([0.5, 0.5, 0.5])
+    return image
+
+
 def concat_image(img, save_name=''):
     'Concate the generated images and save it.'
+    img = denormal_image(img)
     grid = make_grid(img, nrow=8)
     save_image(grid, fp=os.path.join('./results', f"{save_name}.png"))
 

@@ -43,9 +43,7 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
     # criterion = nn.BCELoss()
     optimizerD = optim.RMSprop(netD.parameters(), lr=args.lr)
     optimizerG = optim.RMSprop(netG.parameters(), lr=args.lr)
-    # no log in loss
-    one = torch.FloatTensor([1])
-    mone = -1 * one
+    
 
     # All evaluating data conditions
     eval_cond = concat_test(test_loader)
@@ -70,8 +68,9 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
             real_img = img.to(device, dtype=torch.float32)
             condition = cond.to(device, dtype=torch.float32)
             b_size = len(img)
-            # r_label = torch.ones(b_size).to(device, dtype=torch.float32)
-            # f_label = torch.zeros(b_size).to(device, dtype=torch.float32)
+            # no log in loss
+            one = torch.cuda.FloatTensor([b_size])
+            mone = -1 * one
 
             # make sure Lipschitz continuity
             for p in netD.parameters():

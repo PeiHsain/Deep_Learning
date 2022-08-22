@@ -15,7 +15,7 @@ from utils import concat_test, concat_image, plot_train_curve
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--lr', default=0.00005, type=float, help='learning rate')
+    parser.add_argument('--lr', default=0.0002, type=float, help='learning rate')
     parser.add_argument('--beta1', default=0.5, type=float, help='momentum term for adam')
     parser.add_argument('--batch_size', default=32, type=int, help='batch size')
     parser.add_argument('--image_size', default=64, type=int, help='the spatial size of the images used for training.')

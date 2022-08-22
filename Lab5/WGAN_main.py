@@ -15,7 +15,7 @@ from utils import concat_test, concat_image, plot_train_curve
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--lr', default=0.0002, type=float, help='learning rate')
+    parser.add_argument('--lr', default=0.00005, type=float, help='learning rate')
     parser.add_argument('--beta1', default=0.5, type=float, help='momentum term for adam')
     parser.add_argument('--batch_size', default=32, type=int, help='batch size')
     parser.add_argument('--image_size', default=64, type=int, help='the spatial size of the images used for training.')
@@ -130,7 +130,7 @@ def train(args, train_loader, test_loader, netD, netG, evaluator, device):
         if acc > best_acc:
             best_G = copy.deepcopy(netG.state_dict())
             best_acc = acc
-            torch.save(best_G, os.path.join('./models', f'WGAN_epoch{epoch}_acc{best_acc:.4f}_1.pt'))
+            torch.save(best_G, os.path.join('./models', f'WGAN_epoch{epoch}_acc{best_acc:.4f}_2.pt'))
             # concat_image(gene_x, save_name=f"WGAN_epoch{epoch}_acc{best_acc}_1")
     # plot_train_curve(G_loss, D_loss, eval_acc, save_name=f"WGAN_train_process_1")
 

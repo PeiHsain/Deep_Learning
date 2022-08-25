@@ -10,3 +10,7 @@ ResNet architecture. 3. calculate the confusion matrix to evaluate the performan
 Implement a conditional VAE for video prediction. The model should be able to do prediction based on past frames.
 # Lab5
 Implement a conditional GAN to generate synthetic images according to multi-label conditions.
+# Lab6
+Implement two deep reinforcement algorithms: 
+(1) solve LunarLander-v2 using deep Q-network (DQN)
+(2) solve LunarLanderContinuous-v2 using deep deterministic policy gradient (DDPG)

@@ -117,7 +117,7 @@ class DQN:
 
         ## TODO ##
         # calculate q_value and q_target to get loss
-        q_value = self._behavior_net(state).gather(dim=1, index=action)
+        q_value = self._behavior_net(state).gather(dim=1, index=action.long())
         with torch.no_grad():
            q_next = self._behavior_net(next_state).max(1)[0].view(-1, 1)
            q_target = reward + gamma * q_next * (1 - done) # if done=True, don't have next state

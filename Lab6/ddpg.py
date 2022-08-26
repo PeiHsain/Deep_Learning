@@ -39,24 +39,43 @@ class ReplayMemory:
     def sample(self, batch_size, device):
         '''sample a batch of transition tensors'''
         ## TODO ##
-        raise NotImplementedError
+        transitions = random.sample(self.buffer, batch_size)
+        return (torch.tensor(x, dtype=torch.float, device=device)
+                for x in zip(*transitions))
 
 
 class ActorNet(nn.Module):
     def __init__(self, state_dim=8, action_dim=2, hidden_dim=(400, 300)):
         super().__init__()
         ## TODO ##
-        raise NotImplementedError
+        # 8 observation -> Q-value of 2 action
+        h1, h2 = hidden_dim
+        self.layer1 = nn.Sequential(
+            nn.Linear(state_dim, h1),
+            nn.ReLU()
+        )
+        self.layer2 = nn.Sequential(
+            nn.Linear(h1, h2),
+            nn.ReLU()
+        )
+        self.layer3 = nn.Sequential(
+            nn.Linear(h2, action_dim),
+            nn.Tanh()
+        )
 
     def forward(self, x):
         ## TODO ##
-        raise NotImplementedError
+        output = self.layer1(x)
+        output = self.layer2(output)
+        output = self.layer3(output)
+        return output
 
 
 class CriticNet(nn.Module):
     def __init__(self, state_dim=8, action_dim=2, hidden_dim=(400, 300)):
         super().__init__()
         h1, h2 = hidden_dim
+        # 2 action -> Q-value of 2 action
         self.critic_head = nn.Sequential(
             nn.Linear(state_dim + action_dim, h1),
             nn.ReLU(),
@@ -84,9 +103,10 @@ class DDPG:
         self._target_actor_net.load_state_dict(self._actor_net.state_dict())
         self._target_critic_net.load_state_dict(self._critic_net.state_dict())
         ## TODO ##
-        # self._actor_opt = ?
-        # self._critic_opt = ?
-        raise NotImplementedError
+        # choose the optimizer
+        self._actor_opt = torch.optim.Adam(self._actor_net.parameters(), lr=args.lra)
+        self._critic_opt = torch.optim.Adam(self._critic_net.parameters(), lr=args.lrc)
+
         # action noise
         self._action_noise = GaussianNoise(dim=2)
         # memory
@@ -101,7 +121,16 @@ class DDPG:
     def select_action(self, state, noise=True):
         '''based on the behavior (actor) network and exploration noise'''
         ## TODO ##
-        raise NotImplementedError
+        # change state from np.array(8) cpu to tensor(1, 8) gpu 
+        state = torch.tensor(state).view(1, -1).to(self.device)
+        with torch.no_grad():
+            if noise:
+                # add the exploration noise
+                action = self._actor_net(state)
+                explo_noise = torch.tensor(self._action_noise.sample().astype('float32')).view(1, -1).to(self.device)
+                return (action + explo_noise).cpu().numpy().squeeze()
+            else:
+                return self._actor_net(state).cpu().numpy().squeeze()
 
     def append(self, state, action, reward, next_state, done):
         self._memory.append(state, action, [reward / 100], next_state,
@@ -127,14 +156,17 @@ class DDPG:
         ## update critic ##
         # critic loss
         ## TODO ##
-        # q_value = ?
-        # with torch.no_grad():
-        #    a_next = ?
-        #    q_next = ?
-        #    q_target = ?
-        # criterion = ?
-        # critic_loss = criterion(q_value, q_target)
-        raise NotImplementedError
+        # calculate q_value and q_target to get loss
+        q_value = critic_net(state, action)
+        with torch.no_grad():
+           a_next = target_actor_net(next_state)
+           q_next = target_critic_net(next_state, a_next)
+           # if done=True, don't have next state
+           q_target = reward + gamma * q_next * (1-done)
+        # choose the loss function
+        criterion = nn.MSELoss()
+        critic_loss = criterion(q_value, q_target)
+
         # optimize critic
         actor_net.zero_grad()
         critic_net.zero_grad()
@@ -144,9 +176,10 @@ class DDPG:
         ## update actor ##
         # actor loss
         ## TODO ##
-        # action = ?
-        # actor_loss = ?
-        raise NotImplementedError
+        action = actor_net(state)
+        # average all Q values from critic net. use (-) to minimize 
+        actor_loss = - critic_net(state, action).mean()
+
         # optimize actor
         actor_net.zero_grad()
         critic_net.zero_grad()
@@ -158,7 +191,8 @@ class DDPG:
         '''update target network by _soft_ copying from behavior network'''
         for target, behavior in zip(target_net.parameters(), net.parameters()):
             ## TODO ##
-            raise NotImplementedError
+            # target = tau * behavior + (1-tau) * target 
+            target.data.copy_(tau * behavior.data + (1-tau) * target.data)
 
     def save(self, model_path, checkpoint=False):
         if checkpoint:
@@ -235,11 +269,24 @@ def test(args, env, agent, writer):
         env.seed(seed)
         state = env.reset()
         ## TODO ##
-        # ...
-        #     if done:
-        #         writer.add_scalar('Test/Episode Reward', total_reward, n_episode)
-        #         ...
-        raise NotImplementedError
+        for t in itertools.count(start=1):
+            # whether to draw the game scene
+            if args.render:
+                env.render()
+            # select action, don't add noicse
+            action = agent.select_action(state, False)
+            # execute action
+            next_state, reward, done, _ = env.step(action)
+            # move to next state and sum to total_reward
+            state = next_state
+            total_reward += reward
+
+            if done:
+                writer.add_scalar('Test/Episode Reward', total_reward, n_episode)
+                # reward log
+                rewards.append(total_reward)
+                print(f"Run{n_episode} Reward = {total_reward:.4f}")
+                break
     print('Average Reward', np.mean(rewards))
     env.close()
 

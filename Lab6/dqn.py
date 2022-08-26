@@ -35,14 +35,33 @@ class ReplayMemory:
 
 
 class Net(nn.Module):
+# Input: an 8-dimension observation (not an image)
+# First layer: fully connected layer (ReLU)
+# input: 8, output: 32
+# Second layer: fully connected layer (ReLU)
+# input: 32, output: 32
+# Third layer: fully connected layer
+# input: 32, output: 4
     def __init__(self, state_dim=8, action_dim=4, hidden_dim=32):
         super().__init__()
         ## TODO ##
-        raise NotImplementedError
+        # 8 observation -> Q-value of 4 action
+        self.layer1 = nn.Sequential(
+            nn.Linear(state_dim, hidden_dim),
+            nn.ReLU()
+        )
+        self.layer2 = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU()
+        )
+        self.layer3 = nn.Linear(hidden_dim, action_dim)
 
     def forward(self, x):
         ## TODO ##
-        raise NotImplementedError
+        output = self.layer1(x)
+        output = self.layer2(output)
+        output = self.layer3(output)
+        return output
 
 
 class DQN:
@@ -52,8 +71,8 @@ class DQN:
         # initialize target network
         self._target_net.load_state_dict(self._behavior_net.state_dict())
         ## TODO ##
-        # self._optimizer = ?
-        raise NotImplementedError
+        # choose the optimizer
+        self._optimizer = torch.optim.Adam(self._behavior_net.parameters(), lr=args.lr)
         # memory
         self._memory = ReplayMemory(capacity=args.capacity)
 
@@ -66,8 +85,20 @@ class DQN:
 
     def select_action(self, state, epsilon, action_space):
         '''epsilon-greedy based on behavior network'''
-         ## TODO ##
-        raise NotImplementedError
+        ## TODO ##
+        # change state from np.array(8) cpu to tensor(1, 8) gpu 
+        state = torch.tensor(state).view(1, -1).to(self.device)
+        probability = np.random.random()
+        if probability > epsilon:
+            # take max Q(a)
+            with torch.no_grad():
+                # t.max(1) will return largest column value of each row.
+                # second column on max result is index of where max element was found,
+                # so we pick action with the larger expected reward.
+                return self._behavior_net(state).max(1)[1].item()
+        else:
+            # randomly take action
+            return action_space.sample()
 
     def append(self, state, action, reward, next_state, done):
         self._memory.append(state, [action], [reward / 10], next_state,
@@ -85,13 +116,15 @@ class DQN:
             self.batch_size, self.device)
 
         ## TODO ##
-        # q_value = ?
-        # with torch.no_grad():
-        #    q_next = ?
-        #    q_target = ?
-        # criterion = ?
-        # loss = criterion(q_value, q_target)
-        raise NotImplementedError
+        # calculate q_value and q_target to get loss
+        q_value = self._behavior_net(state).gather(dim=1, index=action)
+        with torch.no_grad():
+           q_next = self._behavior_net(next_state).max(1)[0].view(-1, 1)
+           q_target = reward + gamma * q_next * (1 - done) # if done=True, don't have next state
+        # choose the loss function
+        criterion = nn.MSELoss()
+        loss = criterion(q_value, q_target)
+        
         # optimize
         self._optimizer.zero_grad()
         loss.backward()
@@ -101,7 +134,7 @@ class DQN:
     def _update_target_network(self):
         '''update target network by copying from behavior network'''
         ## TODO ##
-        raise NotImplementedError
+        self._target_net.load_state_dict(self._behavior_net.state_dict())
 
     def save(self, model_path, checkpoint=False):
         if checkpoint:
@@ -174,11 +207,23 @@ def test(args, env, agent, writer):
         env.seed(seed)
         state = env.reset()
         ## TODO ##
-        # ...
-        #     if done:
-        #         writer.add_scalar('Test/Episode Reward', total_reward, n_episode)
-        #         ...
-        raise NotImplementedError
+        for t in itertools.count(start=1):
+            # whether to draw the game scene
+            if args.render:
+                env.render()
+            # select action
+            action = agent.select_action(state, epsilon, action_space)
+            # execute action
+            next_state, reward, done, _ = env.step(action)
+            # move to next state and sum to total_reward
+            state = next_state
+            total_reward += reward
+            if done:
+                writer.add_scalar('Test/Episode Reward', total_reward, n_episode)
+                # reward log
+                rewards.append(total_reward)
+                print(f"Run{n_episode} Reward = {total_reward:.4f}")
+                break
     print('Average Reward', np.mean(rewards))
     env.close()
 

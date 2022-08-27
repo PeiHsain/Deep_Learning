@@ -173,7 +173,8 @@ class TD3:
         q_value2 = critic_net2(state, action)
         with torch.no_grad():
             ## Target Policy Smoothing -> add noise to target action
-            a_next = target_actor_net(next_state, True)
+            noise = torch.rand_like(action).to(self.device).clamp(-self.noise_clip, self.noise_clip)
+            a_next = (target_actor_net(next_state) + noise).clamp(-self.action_limit, self.action_limit)
             ## Clipped Double Q Learning -> pick smaller Q value from two critic net
             q_next1 = target_critic_net1(next_state, a_next)
             q_next2 = target_critic_net2(next_state, a_next)

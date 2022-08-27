@@ -146,9 +146,9 @@ class TD3:
         self._memory.append(state, action, [reward / 100], next_state,
                             [int(done)])
 
-    def update(self, epoch):
+    def update(self, iter):
         # update the behavior networks
-        self._update_behavior_network(self.gamma, epoch)
+        self._update_behavior_network(self.gamma, iter)
         # update the target networks
         self._update_target_network(self._target_actor_net, self._actor_net,
                                     self.tau)
@@ -157,7 +157,7 @@ class TD3:
         self._update_target_network(self._target_critic_net2, self._critic_net2,
                                     self.tau)
 
-    def _update_behavior_network(self, gamma, epoch):
+    def _update_behavior_network(self, gamma, iter):
         actor_net, critic_net1, critic_net2, target_actor_net, target_critic_net1, target_critic_net2 = self._actor_net, self._critic_net1, self._critic_net2, self._target_actor_net, self._target_critic_net1, self._target_critic_net2
         actor_opt, critic_opt1, critic_opt2 = self._actor_opt, self._critic_opt1, self._critic_opt2
 
@@ -199,7 +199,7 @@ class TD3:
         ## Delayed Policy Update -> Actor update fewer than Critic
         # actor loss
         ## TODO ##
-        if epoch % self.policy_delay == 0:
+        if iter % self.policy_delay == 0:
             action = actor_net(state)
             # average all Q values from critic net. use (-) to minimize 
             actor_loss = - critic_net1(state, action).mean()
@@ -273,7 +273,7 @@ def train(args, env, agent, writer):
             # store transition
             agent.append(state, action, reward, next_state, done)
             if total_steps >= args.warmup:
-                agent.update(episode)
+                agent.update(t)
 
             state = next_state
             total_reward += reward

@@ -224,28 +224,35 @@ class TD3:
             torch.save(
                 {
                     'actor': self._actor_net.state_dict(),
-                    'critic': self._critic_net.state_dict(),
+                    'critic1': self._critic_net1.state_dict(),
+                    'critic2': self._critic_net2.state_dict(),
                     'target_actor': self._target_actor_net.state_dict(),
-                    'target_critic': self._target_critic_net.state_dict(),
+                    'target_critic1': self._target_critic_net1.state_dict(),
+                    'target_critic2': self._target_critic_net2.state_dict(),
                     'actor_opt': self._actor_opt.state_dict(),
-                    'critic_opt': self._critic_opt.state_dict(),
+                    'critic_opt1': self._critic_opt1.state_dict(),
+                    'critic_opt2': self._critic_opt2.state_dict(),
                 }, model_path)
         else:
             torch.save(
                 {
                     'actor': self._actor_net.state_dict(),
-                    'critic': self._critic_net.state_dict(),
+                    'critic1': self._critic_net1.state_dict(),
+                    'critic2': self._critic_net2.state_dict(),
                 }, model_path)
 
     def load(self, model_path, checkpoint=False):
         model = torch.load(model_path)
         self._actor_net.load_state_dict(model['actor'])
-        self._critic_net.load_state_dict(model['critic'])
+        self._critic_net1.load_state_dict(model['critic1'])
+        self._critic_net2.load_state_dict(model['critic2'])
         if checkpoint:
             self._target_actor_net.load_state_dict(model['target_actor'])
-            self._target_critic_net.load_state_dict(model['target_critic'])
+            self._target_critic_net1.load_state_dict(model['target_critic1'])
+            self._target_critic_net2.load_state_dict(model['target_critic2'])
             self._actor_opt.load_state_dict(model['actor_opt'])
-            self._critic_opt.load_state_dict(model['critic_opt'])
+            self._critic_opt1.load_state_dict(model['critic_opt1'])
+            self._critic_opt2.load_state_dict(model['critic_opt2'])
 
 
 def train(args, env, agent, writer):

@@ -138,7 +138,7 @@ class TD3:
                 # make noise in [-c, c]
                 explo_noise = torch.tensor(self._action_noise.sample().astype('float32')).view(1, -1).to(self.device)
                 explo_noise = torch.clamp(explo_noise, -self.noise_clip, self.noise_clip)
-                return (action + explo_noise).clamp().cpu().numpy().squeeze()
+                return (action + explo_noise).cpu().numpy().squeeze()
             else:
                 return self._actor_net(state).cpu().numpy().squeeze()
 

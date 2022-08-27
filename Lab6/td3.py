@@ -265,7 +265,7 @@ def train(args, env, agent, writer):
             # store transition
             agent.append(state, action, reward, next_state, done)
             if total_steps >= args.warmup:
-                agent.update()
+                agent.update(episode)
 
             state = next_state
             total_reward += reward

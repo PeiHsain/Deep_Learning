@@ -295,11 +295,12 @@ def main():
     ## arguments ##
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-d', '--device', default='cuda')
-    parser.add_argument('-m', '--model', default='ddpg.pth')
-    parser.add_argument('--logdir', default='log/ddpg')
+    parser.add_argument('-m', '--model', default='ddpg_2.pth')
+    parser.add_argument('--logdir', default='log/ddpg_2')
     # train
     parser.add_argument('--warmup', default=10000, type=int)
-    parser.add_argument('--episode', default=1200, type=int)
+    # parser.add_argument('--episode', default=1200, type=int)
+    parser.add_argument('--episode', default=1800, type=int)
     parser.add_argument('--batch_size', default=64, type=int)
     parser.add_argument('--capacity', default=500000, type=int)
     parser.add_argument('--lra', default=1e-3, type=float)
